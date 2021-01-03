@@ -49,6 +49,7 @@ public class UserController {
         if (user == null)
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
 
+        // Check if the encoded password matchies the user password
         if (passwordEncoder.matches(password,user.getPassword()))
         {
 
