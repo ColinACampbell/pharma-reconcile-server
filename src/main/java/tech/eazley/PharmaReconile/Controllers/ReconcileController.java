@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -46,7 +47,7 @@ public class ReconcileController {
     }
 
     // TODO Figure this out later
-    @PostMapping("/image/upload")
+    @PostMapping("/pdf/upload")
     public ArrayList<DrugClaimResponseBody> uploadDocuments(HttpSession session, @RequestBody HashMap<String,Object> body)
     {
         String client = (String) body.get("client");
@@ -92,8 +93,8 @@ public class ReconcileController {
 
     @GetMapping(value = "/get-highlight/{fileName}.pdf")
     private void getImage(@PathVariable String fileName,
-                          HttpServletResponse response, HttpSession httpSession) throws IOException {
-
+                          HttpServletResponse response,
+                          HttpSession httpSession) throws IOException {
 
         PDFCache fileCache = pdfCacheService.getLatestCache();
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(fileCache,"client-data");
@@ -111,7 +112,8 @@ public class ReconcileController {
             // get your file as InputStream
             InputStream is = new ByteArrayInputStream(data);
             // copy it to response's OutputStream
-            response.setHeader("Content-Disposition", "attachment; filename=\"somefile.pdf\"");
+
+            response.setHeader("Content-Disposition", "attachment; filename="+fileName);
             response.setContentType("application/pdf");
             IOUtils.copy(is,response.getOutputStream());
             //org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
