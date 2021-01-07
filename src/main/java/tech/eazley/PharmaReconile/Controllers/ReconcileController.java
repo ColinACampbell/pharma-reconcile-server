@@ -113,7 +113,7 @@ public class ReconcileController {
             InputStream is = new ByteArrayInputStream(data);
             // copy it to response's OutputStream
 
-            response.setHeader("Content-Disposition", "attachment; filename="+fileName);
+            response.setHeader("Content-Disposition", "attachment; filename="+fileName+".pdf");
             response.setContentType("application/pdf");
             IOUtils.copy(is,response.getOutputStream());
             //org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
