@@ -93,6 +93,17 @@ public class UserController {
         return new ResponseEntity<>(null,HttpStatus.CREATED);
     }
 
+    @PostMapping("/check-username")
+    public ResponseEntity<?> checkUsername(@RequestBody Map<String,String> requestBody)
+    {
+        String username = requestBody.get("username");
+        User user = userRepository.findByUsername(username);
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
     public SecurityContext createSecurityContext(String username,String password)
     {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username,password);
