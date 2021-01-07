@@ -17,6 +17,7 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String role;
 
     @ManyToOne
     private Pharmacy pharmacy;
@@ -33,6 +34,14 @@ public class User {
         this.email = email;
     }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setPharmacy(Pharmacy pharmacy) {
+        this.pharmacy = pharmacy;
+    }
+
     public int getId() {
         return id;
     }
@@ -47,5 +56,13 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public Pharmacy getPharmacy() {
+        return pharmacy;
     }
 }
