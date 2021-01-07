@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.AppUserDetails;
 import tech.eazley.PharmaReconile.Models.User;
 import tech.eazley.PharmaReconile.Repositories.UserRepository;
+import tech.eazley.PharmaReconile.Services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -26,7 +27,7 @@ public class UserController {
     @Autowired
     private AuthenticationManager authManager;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -44,7 +45,7 @@ public class UserController {
         String email = requestBody.get("email");
         String password = requestBody.get("password");
 
-        User user = userRepository.findByEmail(email);
+        User user = userService.findByEmail(email);
 
         if (user == null)
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
@@ -73,7 +74,7 @@ public class UserController {
         String username = requestBody.get("username");
         String password = requestBody.get("password");
 
-        if (userRepository.findByEmail(email) != null) {
+        if (userService.findByEmail(email) != null) {
             return new ResponseEntity<>(null,HttpStatus.CONFLICT);
         }
 
@@ -81,7 +82,7 @@ public class UserController {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
+        userService.save(user);
 
         // Create a token to auth user
         SecurityContext securityContext = this.createSecurityContext(username,password);
@@ -93,12 +94,16 @@ public class UserController {
         return new ResponseEntity<>(null,HttpStatus.CREATED);
     }
 
-    @PostMapping("/check-username")
-    public ResponseEntity<?> checkUsername(@RequestBody Map<String,String> requestBody)
+    @PostMapping("/check-username-and-email")
+    public ResponseEntity<?> checkUsername(@RequestBody Map<String,String> requestBody, HttpServletRequest request)
     {
         String username = requestBody.get("username");
-        User user = userRepository.findByUsername(username);
-        if (user == null)
+        String email = requestBody.get("email");
+
+        User user1 = userService.findByUsername(username);
+        User user2 = userService.findByEmail(email);
+
+        if (user1 == null && user2 == null)
             return new ResponseEntity<>(HttpStatus.OK);
         else
             return new ResponseEntity<>(HttpStatus.CONFLICT);

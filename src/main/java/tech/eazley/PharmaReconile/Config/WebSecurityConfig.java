@@ -27,7 +27,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) throws Exception {
         http.userDetailsService(userDetailsService);
         http.authorizeRequests()
-                .antMatchers("/api/user/sign-up","/api/user/login","/api/user/test-1")
+                .antMatchers("/api/user/sign-up","/api/user/login",
+                        "/api/user/test-1","/api/user/check-username-and-email")
                 .permitAll().and().csrf().disable();
         http.cors();
         super.configure(http);
