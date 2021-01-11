@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @RequestMapping("/api/pharmacy")
@@ -18,8 +19,11 @@ public class PharmacyController {
     PharmacyService pharmacyService;
 
     @PostMapping("/register-pharmacy")
-    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> postBody)
+    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> postBody, HttpSession session)
     {
+
+        System.out.print(session);
+
         String pharmacyName = postBody.get("pharmacyName");
         String pharmacyAddress = postBody.get("pharmacyAddress");
         int numberOfEmployees = Integer.parseInt(postBody.get("numberOfEmployees"));

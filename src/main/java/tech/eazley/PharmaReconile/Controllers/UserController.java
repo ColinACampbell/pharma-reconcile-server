@@ -61,6 +61,8 @@ public class UserController {
             // Create a new session and add the security context.
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+            session.setAttribute("user",user);
+
             return new ResponseEntity<>(null,HttpStatus.OK);
         }
 
@@ -82,6 +84,8 @@ public class UserController {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
+
+        user.setRole("owner");
         userService.save(user);
 
         // Create a token to auth user
@@ -89,7 +93,9 @@ public class UserController {
 
         // Create a new session and add the security context.
         HttpSession session = request.getSession(true);
+
         session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+        session.setAttribute("user",user); // set the user object to be used elsewhere
 
         return new ResponseEntity<>(null,HttpStatus.CREATED);
     }
