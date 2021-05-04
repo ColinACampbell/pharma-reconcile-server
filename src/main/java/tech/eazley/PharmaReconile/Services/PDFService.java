@@ -9,6 +9,7 @@ import tech.eazley.PharmaReconile.Models.DrugClaimResponseBody;
 import tech.eazley.PharmaReconile.Utils.PDFAnnotator;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Service
 public class PDFService {
@@ -119,31 +120,37 @@ public class PDFService {
             e.printStackTrace();
         }
 
-        ArrayList<DrugClaimResponseBody> responseBody = new ArrayList<>();
-        for (DrugClaim drugClaim : claims)
+        // Cache the data to make O(n^2) redundant
+        HashMap<String,DrugClaim> claimHashMap = new HashMap<>();
+        for (DrugClaim claim : claims)
         {
-            for ( String purchase : purchases)
-            {
-                if (purchase.contains(drugClaim.getReferenceNumber()))
-                {
-                    DrugClaimResponseBody body = new DrugClaimResponseBody();
-                    /**
-                     Matcher matcher = pattern.matcher(purchase);
-                     matcher.find();
-                     System.out.println(matcher.group(0)+" "+matcher.group(1));
-                     **/
-                    body.setDetails(purchase.substring(12));
+            claimHashMap.put(claim.getReferenceNumber(),claim);
+        }
 
-                    body.setReferenceNumber(drugClaim.getReferenceNumber());
-                    body.setDate(drugClaim.getDate());
-                    body.setCharged(drugClaim.getCharged());
-                    body.setExcluded(drugClaim.getExcluded());
-                    body.setDeductibleMoney(drugClaim.getExcluded());
-                    body.setDeductiblePercentage(drugClaim.getDeductiblePercentage());
-                    body.setPayable(drugClaim.getPayable());
-                    responseBody.add(body);
-                }
-            }
+        ArrayList<DrugClaimResponseBody> responseBody = new ArrayList<>();
+
+        for ( String purchase: purchases )
+        {
+            String[] extracts = purchase.split(" ");
+            String purchaseReferenceNum = extracts[2]; // the ref number is 3rd
+
+            DrugClaim drugClaim;
+            if (claimHashMap.containsKey(purchaseReferenceNum))
+                drugClaim = claimHashMap.get(purchaseReferenceNum);
+            else
+                continue;
+
+            DrugClaimResponseBody body = new DrugClaimResponseBody();
+            body.setDetails(purchase.substring(12));
+
+            body.setReferenceNumber(drugClaim.getReferenceNumber());
+            body.setDate(drugClaim.getDate());
+            body.setCharged(drugClaim.getCharged());
+            body.setExcluded(drugClaim.getExcluded());
+            body.setDeductibleMoney(drugClaim.getExcluded());
+            body.setDeductiblePercentage(drugClaim.getDeductiblePercentage());
+            body.setPayable(drugClaim.getPayable());
+            responseBody.add(body);
         }
 
         return responseBody;
@@ -152,6 +159,7 @@ public class PDFService {
     public byte[] highlightReferences(ArrayList<DrugClaimResponseBody> claimResponseBody)
     {
         String[] criteria= new String[claimResponseBody.size()];
+
         for (int i = 0; i < claimResponseBody.size(); i ++)
         {
             criteria[i] = claimResponseBody.get(i).getReferenceNumber();

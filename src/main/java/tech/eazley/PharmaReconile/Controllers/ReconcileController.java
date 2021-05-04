@@ -71,6 +71,7 @@ public class ReconcileController {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+        // Create a PDF Cache row to represent the cache of both the client and sagicor file
         PDFCache pdfCache = new PDFCache();
         pdfCache.setDataAdded(timestamp.getTime());
 
@@ -81,20 +82,20 @@ public class ReconcileController {
         clientFile.setPdfCache(pdfCache);
         sagicorPDFFile.setPdfCache(pdfCache);
 
-        // Save the files to db
+        // Save the files to db for caching
         pdfFileService.saveFile(sagicorPDFFile);
         pdfFileService.saveFile(clientFile);
 
-        // Get the needed data
+        // Set the needed data
         pdfService.setClientData(clientData);
         pdfService.setSagicorData(sagicorData);
+
         return pdfService.extractData();
     }
 
     @GetMapping(value = "/get-highlight/{fileName}.pdf")
-    private void getImage(@PathVariable String fileName,
-                          HttpServletResponse response,
-                          HttpSession httpSession) throws IOException {
+    private void getHighlight(@PathVariable String fileName,
+                          HttpServletResponse response) {
 
         PDFCache fileCache = pdfCacheService.getLatestCache();
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(fileCache,"client-data");

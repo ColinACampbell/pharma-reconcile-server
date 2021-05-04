@@ -26,6 +26,7 @@ public class PharmacyController {
 
         String pharmacyName = postBody.get("pharmacyName");
         String pharmacyAddress = postBody.get("pharmacyAddress");
+        
         int numberOfEmployees = Integer.parseInt(postBody.get("numberOfEmployees"));
 
         Pharmacy pharmacy = new Pharmacy();
