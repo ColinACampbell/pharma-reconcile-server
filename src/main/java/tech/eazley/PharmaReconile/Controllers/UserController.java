@@ -53,7 +53,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/login-old")
     public ResponseEntity<?> login(HttpServletRequest request, @RequestBody Map<String,String> requestBody)
     {
         String email = requestBody.get("email");
@@ -84,8 +84,8 @@ public class UserController {
     }
 
 
-    @PostMapping("/auth")
-    public ResponseEntity<AuthResponse> loginJWT(@RequestBody UserRequestBody userRequestBody)
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> loginJWT(@RequestBody UserRequestBody userRequestBody) throws Exception
     {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userRequestBody.getEmail(),userRequestBody.getPassword());
         try {
@@ -93,6 +93,7 @@ public class UserController {
         } catch (BadCredentialsException ex)
         {
             ex.printStackTrace();
+            throw new Exception("Wrong Password");
         }
 
         AppUserDetails appUserDetails = (AppUserDetails) appUserDetailsService.loadUserByUsername(userRequestBody.getEmail());
@@ -146,22 +147,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/register-pharmacy")
-    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody)
-    {
-        String pharmacyName = requestBody.get("pharmacy_name");
-        String phone1 = requestBody.get("phone1");
-        String phone2 = requestBody.get("phone2");
-        String address = requestBody.get("address");
-        String parish = requestBody.get("parish");
 
-        System.out.println(requestBody);
-        Pharmacy pharmacy = new Pharmacy(pharmacyName,phone1,phone2,address,parish);
-        pharmacy.setNumberOfUsers(1);
-        pharmacyService.savePharmacy(pharmacy);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     public SecurityContext createSecurityContext(String username,String password)
     {
