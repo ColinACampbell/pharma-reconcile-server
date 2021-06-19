@@ -12,8 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.AppUserDetails;
+import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Models.User;
 import tech.eazley.PharmaReconile.Repositories.UserRepository;
+import tech.eazley.PharmaReconile.Services.PharmacyService;
 import tech.eazley.PharmaReconile.Services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +32,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PharmacyService pharmacyService;
 
     @GetMapping("/test")
     public User test(Authentication authentication)
@@ -113,6 +117,23 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.OK);
         else
             return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/register-pharmacy")
+    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody)
+    {
+        String pharmacyName = requestBody.get("pharmacy_name");
+        String phone1 = requestBody.get("phone1");
+        String phone2 = requestBody.get("phone2");
+        String address = requestBody.get("address");
+        String parish = requestBody.get("parish");
+
+        System.out.println(requestBody);
+        Pharmacy pharmacy = new Pharmacy(pharmacyName,phone1,phone2,address,parish);
+        pharmacy.setNumberOfUsers(1);
+        pharmacyService.savePharmacy(pharmacy);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public SecurityContext createSecurityContext(String username,String password)

@@ -59,7 +59,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
         return authProvider;
     }
 
-    // TODO : Add proper configuration for the CORS mapping of the client
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
