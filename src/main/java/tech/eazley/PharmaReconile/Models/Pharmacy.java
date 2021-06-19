@@ -9,7 +9,7 @@ public class Pharmacy {
     @GeneratedValue
     private int id;
     @OneToOne
-    private User user;
+    private User user; // owner
     private String pharmacyName;
     private String address;
     private String phone1;
@@ -45,5 +45,21 @@ public class Pharmacy {
 
     public void setNumberOfUsers(int numberOfUsers) {
         this.numberOfUsers = numberOfUsers;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public int getNumberOfUsers() {
+        return numberOfUsers;
+    }
+
+    public String getPharmacyName() {
+        return pharmacyName;
     }
 }

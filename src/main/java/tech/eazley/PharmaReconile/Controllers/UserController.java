@@ -5,18 +5,24 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.AppUserDetails;
+import tech.eazley.PharmaReconile.Models.Http.AuthResponse;
+import tech.eazley.PharmaReconile.Models.Http.UserRequestBody;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Models.User;
 import tech.eazley.PharmaReconile.Repositories.UserRepository;
+import tech.eazley.PharmaReconile.Services.AppUserDetailsService;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
 import tech.eazley.PharmaReconile.Services.UserService;
+import tech.eazley.PharmaReconile.Util.JWTUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -31,9 +37,13 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
+    private AppUserDetailsService appUserDetailsService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private PharmacyService pharmacyService;
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @GetMapping("/test")
     public User test(Authentication authentication)
@@ -71,6 +81,23 @@ public class UserController {
         }
 
         return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
+    }
+
+
+    @PostMapping("/auth")
+    public ResponseEntity<AuthResponse> loginJWT(@RequestBody UserRequestBody userRequestBody)
+    {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userRequestBody.getEmail(),userRequestBody.getPassword());
+        try {
+            Authentication authentication = authManager.authenticate(authenticationToken);
+        } catch (BadCredentialsException ex)
+        {
+            ex.printStackTrace();
+        }
+
+        AppUserDetails appUserDetails = (AppUserDetails) appUserDetailsService.loadUserByUsername(userRequestBody.getEmail());
+        String token = jwtUtil.generateToken(appUserDetails);
+        return new ResponseEntity<AuthResponse>(new AuthResponse(token), HttpStatus.OK);
     }
 
     @PostMapping("/sign-up")

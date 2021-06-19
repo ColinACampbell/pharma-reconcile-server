@@ -9,11 +9,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tech.eazley.PharmaReconile.Filters.JWTFilter;
 import tech.eazley.PharmaReconile.Services.AppUserDetailsService;
 
 @Configuration
@@ -22,15 +25,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 {
     @Autowired
     AppUserDetailsService userDetailsService;
+    @Autowired
+    JWTFilter jwtFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.userDetailsService(userDetailsService);
         http.authorizeRequests()
-                .antMatchers("/api/user/sign-up","/api/user/login",
-                        "/api/user/test-1","/api/user/check-username-and-email")
+                .antMatchers("/api/user/*")
                 .permitAll().and().csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.cors();
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         super.configure(http);
     }
 

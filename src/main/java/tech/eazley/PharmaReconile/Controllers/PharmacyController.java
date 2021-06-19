@@ -3,15 +3,16 @@ package tech.eazley.PharmaReconile.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import tech.eazley.PharmaReconile.Models.AppUserDetails;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
+@RestController
 @RequestMapping("/api/pharmacy")
 public class PharmacyController {
 
@@ -39,4 +40,13 @@ public class PharmacyController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
+
+    @GetMapping("/")
+    public Pharmacy getPharmacy(Authentication authentication)
+    {
+        AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
+        Pharmacy pharmacy = pharmacyService.findByUser(appUserDetails.user);
+        System.out.println();
+        return pharmacy;
+    }
 }
