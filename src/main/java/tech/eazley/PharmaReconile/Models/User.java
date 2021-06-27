@@ -19,7 +19,7 @@ public class User {
     private String password;
     private String role;
 
-    @OneToOne
+    @OneToOne(mappedBy = "user")
     PharmacyMember pharmacyMember;
 
     public void setUsername(String username) {

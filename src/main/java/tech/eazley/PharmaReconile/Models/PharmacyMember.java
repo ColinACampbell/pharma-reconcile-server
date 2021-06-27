@@ -6,15 +6,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "pharmacy_members")
 public class PharmacyMember {
-
-
     @Id
     @GeneratedValue
     private int id;
 
-    @OneToOne(mappedBy = "pharmacyMember")
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Pharmacy pharmacy;
 
     private String role;
@@ -42,6 +41,10 @@ public class PharmacyMember {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 }
 

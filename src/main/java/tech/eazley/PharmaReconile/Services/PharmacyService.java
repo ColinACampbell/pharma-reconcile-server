@@ -15,9 +15,4 @@ public class PharmacyService {
     {
         pharmacyRepository.save(pharmacy);
     }
-
-    public Pharmacy findByUser(User user)
-    {
-        return pharmacyRepository.findByUser(user);
-    }
 }

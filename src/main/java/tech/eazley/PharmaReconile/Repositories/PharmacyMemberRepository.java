@@ -9,6 +9,6 @@ import tech.eazley.PharmaReconile.Models.User;
 @Repository
 public interface PharmacyMemberRepository extends CrudRepository<PharmacyMember,Integer>
 {
-
+    PharmacyMember findByUser(User user);
 }
 
