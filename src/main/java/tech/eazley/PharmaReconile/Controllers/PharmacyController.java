@@ -51,7 +51,7 @@ public class PharmacyController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody)
+    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody,Authentication authentication)
     {
         String pharmacyName = requestBody.get("pharmacy_name");
         String phone1 = requestBody.get("phone1");
@@ -59,9 +59,11 @@ public class PharmacyController {
         String address = requestBody.get("address");
         String parish = requestBody.get("parish");
 
-        System.out.println(requestBody);
+
+        AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
         Pharmacy pharmacy = new Pharmacy(pharmacyName,phone1,phone2,address,parish);
         pharmacy.setNumberOfUsers(1);
+
         pharmacyService.savePharmacy(pharmacy);
 
         return new ResponseEntity<>(HttpStatus.OK);
