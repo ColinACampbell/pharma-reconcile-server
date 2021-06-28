@@ -16,22 +16,22 @@ public class CreditService {
     @Autowired
     CreditTransactionRepository creditTransactionRepository;
 
-    private void saveCreditAccount(CreditAccount creditAccount)
+    public void saveCreditAccount(CreditAccount creditAccount)
     {
         creditRepository.save(creditAccount);
     }
 
-    private CreditAccount findByPharmacy(Pharmacy pharmacy)
+    public CreditAccount findByPharmacy(Pharmacy pharmacy)
     {
         return creditRepository.findByPharmacy(pharmacy);
     }
 
-    private CreditTransaction findByCreditAccount(CreditAccount creditAccount)
+    public CreditTransaction findByCreditAccount(CreditAccount creditAccount)
     {
         return creditTransactionRepository.findByCreditAccount(creditAccount);
     }
 
-    private void saveTransaction(CreditTransaction creditTransaction, CreditAccount creditAccount)
+    public void saveTransaction(CreditTransaction creditTransaction, CreditAccount creditAccount)
     {
         creditTransaction.setCreditAccount(creditAccount);
         creditTransactionRepository.save(creditTransaction);
