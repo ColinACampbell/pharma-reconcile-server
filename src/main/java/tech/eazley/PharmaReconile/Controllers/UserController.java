@@ -101,12 +101,12 @@ public class UserController {
         return new ResponseEntity<AuthResponse>(new AuthResponse(token), HttpStatus.OK);
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody Map<String,String> requestBody, HttpServletRequest request)
-    {
-        String email = requestBody.get("email");
-        String username = requestBody.get("username");
-        String password = requestBody.get("password");
+    @PostMapping("/signup")
+    public ResponseEntity<AuthResponse> signup(@RequestBody UserRequestBody requestBody) throws Exception {
+
+        String email = requestBody.getEmail();
+        String username = requestBody.getUserName();
+        String password = requestBody.getPassword();
 
         if (userService.findByEmail(email) != null) {
             return new ResponseEntity<>(null,HttpStatus.CONFLICT);
@@ -120,17 +120,21 @@ public class UserController {
         user.setRole("owner");
         userService.save(user);
 
-        // Create a token to auth user
-        SecurityContext securityContext = this.createSecurityContext(username,password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(requestBody.getEmail(),requestBody.getPassword());
+        try {
+            Authentication authentication = authManager.authenticate(authenticationToken);
+        } catch (BadCredentialsException ex)
+        {
+            ex.printStackTrace();
+            throw new Exception("Wrong Password");
+        }
 
-        // Create a new session and add the security context.
-        HttpSession session = request.getSession(true);
+        AppUserDetails appUserDetails = (AppUserDetails) appUserDetailsService.loadUserByUsername(requestBody.getEmail());
+        String token = jwtUtil.generateToken(appUserDetails);
 
-        session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
-        session.setAttribute("user",user); // set the user object to be used elsewhere
-
-        return new ResponseEntity<>(null,HttpStatus.CREATED);
+        return new ResponseEntity<>(new AuthResponse(token),HttpStatus.CREATED);
     }
+
 
     @PostMapping("/check-username-and-email")
     public ResponseEntity<?> checkUsername(@RequestBody Map<String,String> requestBody, HttpServletRequest request)

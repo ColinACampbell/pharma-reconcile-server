@@ -1,6 +1,7 @@
 package tech.eazley.PharmaReconile.Models;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -8,14 +9,15 @@ public class Pharmacy {
     @Id
     @GeneratedValue
     private int id;
-    @OneToOne
-    private User user; // owner
     private String pharmacyName;
     private String address;
     private String phone1;
     private String phone2;
     private String parish;
     private int numberOfUsers = 0;
+
+    @OneToMany(mappedBy = "pharmacy")
+    List<PharmacyMember> members;
 
     public Pharmacy(String name, String phone1, String phone2, String address, String parish)
     {
@@ -31,9 +33,6 @@ public class Pharmacy {
 
     }
 
-    // add billing info
-    @OneToMany( mappedBy = "pharmacy")
-    private List<User> users;
 
     public void setPharmacyName(String pharmacyName) {
         this.pharmacyName = pharmacyName;

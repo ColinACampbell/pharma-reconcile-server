@@ -7,7 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.AppUserDetails;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
+import tech.eazley.PharmaReconile.Models.PharmacyMember;
+import tech.eazley.PharmaReconile.Models.User;
+import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
+import tech.eazley.PharmaReconile.Services.UserService;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -18,40 +22,21 @@ public class PharmacyController {
 
     @Autowired
     PharmacyService pharmacyService;
-
-    @PostMapping("/register-pharmacy")
-    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> postBody, HttpSession session)
-    {
-
-        System.out.print(session);
-
-        String pharmacyName = postBody.get("pharmacyName");
-        String pharmacyAddress = postBody.get("pharmacyAddress");
-        
-        int numberOfEmployees = Integer.parseInt(postBody.get("numberOfEmployees"));
-
-        Pharmacy pharmacy = new Pharmacy();
-        pharmacy.setPharmacyName(pharmacyName);
-        pharmacy.setAddress(pharmacyAddress);
-        pharmacy.setNumberOfUsers(numberOfEmployees);
-
-        pharmacyService.savePharmacy(pharmacy);
-
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
-    }
-
+    @Autowired
+    PharmacyMemberService pharmacyMemberService;
+    @Autowired
+    UserService userService;
 
     @GetMapping("/")
     public Pharmacy getPharmacy(Authentication authentication)
     {
         AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
-        Pharmacy pharmacy = pharmacyService.findByUser(appUserDetails.user);
-        System.out.println();
-        return pharmacy;
+        PharmacyMember pharmacyMember = pharmacyMemberService.findByUser(appUserDetails.getUser());
+        return pharmacyMember.getPharmacy();
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody)
+    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody,Authentication authentication)
     {
         String pharmacyName = requestBody.get("pharmacy_name");
         String phone1 = requestBody.get("phone1");
@@ -59,10 +44,19 @@ public class PharmacyController {
         String address = requestBody.get("address");
         String parish = requestBody.get("parish");
 
-        System.out.println(requestBody);
+
+        AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
         Pharmacy pharmacy = new Pharmacy(pharmacyName,phone1,phone2,address,parish);
         pharmacy.setNumberOfUsers(1);
+
         pharmacyService.savePharmacy(pharmacy);
+
+        PharmacyMember pharmacyMember = new PharmacyMember();
+        pharmacyMember.setUser(userDetails.getUser());
+        pharmacyMember.setRole("owner");
+        pharmacyMember.setPharmacy(pharmacy);
+
+        pharmacyMemberService.addMember(pharmacyMember);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

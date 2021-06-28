@@ -7,5 +7,8 @@ import tech.eazley.PharmaReconile.Models.PharmacyMember;
 import tech.eazley.PharmaReconile.Models.User;
 
 @Repository
-public interface PharmacyRepository extends CrudRepository<Pharmacy,Integer> {
+public interface PharmacyMemberRepository extends CrudRepository<PharmacyMember,Integer>
+{
+    PharmacyMember findByUser(User user);
 }
+

@@ -19,8 +19,8 @@ public class User {
     private String password;
     private String role;
 
-    @ManyToOne
-    private Pharmacy pharmacy;
+    @OneToOne(mappedBy = "user")
+    PharmacyMember pharmacyMember;
 
     public void setUsername(String username) {
         this.username = username;
@@ -38,8 +38,12 @@ public class User {
         this.role = role;
     }
 
-    public void setPharmacy(Pharmacy pharmacy) {
-        this.pharmacy = pharmacy;
+    public void setPharmacyMember(PharmacyMember pharmacyMember) {
+        this.pharmacyMember = pharmacyMember;
+    }
+
+    public PharmacyMember getPharmacyMember() {
+        return pharmacyMember;
     }
 
     public int getId() {
@@ -62,7 +66,4 @@ public class User {
         return role;
     }
 
-    public Pharmacy getPharmacy() {
-        return pharmacy;
-    }
 }
