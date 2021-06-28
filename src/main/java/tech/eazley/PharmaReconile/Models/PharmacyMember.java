@@ -1,6 +1,5 @@
 package tech.eazley.PharmaReconile.Models;
 
-import javax.annotation.processing.Generated;
 import javax.persistence.*;
 
 @Entity
