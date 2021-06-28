@@ -19,6 +19,9 @@ public class Pharmacy {
     @OneToMany(mappedBy = "pharmacy")
     List<PharmacyMember> members;
 
+    @OneToOne(mappedBy = "pharmacy")
+    CreditAccount creditAccount;
+
     public Pharmacy(String name, String phone1, String phone2, String address, String parish)
     {
         this.pharmacyName = name;
