@@ -3,13 +3,14 @@ package tech.eazley.PharmaReconile.Controllers;
 import org.apache.pdfbox.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import tech.eazley.PharmaReconile.Models.DrugClaimResponseBody;
-import tech.eazley.PharmaReconile.Models.PDFCache;
-import tech.eazley.PharmaReconile.Models.PDFFile;
+import tech.eazley.PharmaReconile.Models.*;
 import tech.eazley.PharmaReconile.Services.PDFCacheService;
 import tech.eazley.PharmaReconile.Services.PDFFileService;
 import tech.eazley.PharmaReconile.Services.PDFService;
+import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Utils.PDFAnnotator;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,9 @@ public class ReconcileController {
     @Autowired
      PDFFileService pdfFileService;
 
+    @Autowired
+    PharmacyMemberService pharmacyMemberService;
+
     @ResponseBody
     @GetMapping("/test")
     public ArrayList<DrugClaimResponseBody> test()
@@ -46,9 +50,16 @@ public class ReconcileController {
         return pdfService.extractData();
     }
 
-    // TODO Figure this out later
+
+    private PharmacyMember getPharmacyMember(Authentication authentication)
+    {
+        AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
+        return pharmacyMemberService.findByUser(userDetails.getUser());
+    }
+
     @PostMapping("/pdf/upload")
-    public ArrayList<DrugClaimResponseBody> uploadDocuments(HttpSession session, @RequestBody HashMap<String,Object> body)
+    public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestBody HashMap<String,Object> body,
+                                                            Authentication authentication)
     {
         String client = (String) body.get("client");
         String sagicor = (String) body.get("sagicor");
@@ -75,6 +86,11 @@ public class ReconcileController {
         PDFCache pdfCache = new PDFCache();
         pdfCache.setDataAdded(timestamp.getTime());
 
+        // Get pharmacy member to set pharmacy in the cache to be fetched later
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+
+        pdfCache.setPharmacy(pharmacyMember.getPharmacy());
+
         // Save this case to the db
         pdfCacheService.saveCache(pdfCache);
 
@@ -95,9 +111,12 @@ public class ReconcileController {
 
     @GetMapping(value = "/get-highlight/{fileName}.pdf")
     private void getHighlight(@PathVariable String fileName,
-                          HttpServletResponse response) {
+                          HttpServletResponse response, Authentication authentication) {
 
-        PDFCache fileCache = pdfCacheService.getLatestCache();
+
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+
+        PDFCache fileCache = pdfCacheService.getLatestCache(pharmacyMember.getPharmacy());
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(fileCache,"client-data");
         List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(fileCache,"sagicor-data");
 

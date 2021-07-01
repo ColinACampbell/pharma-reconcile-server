@@ -22,6 +22,9 @@ public class Pharmacy {
     @OneToOne(mappedBy = "pharmacy")
     CreditAccount creditAccount;
 
+    @OneToMany(mappedBy = "pharmacy")
+    List<PDFCache> pdfCaches;
+
     public Pharmacy(String name, String phone1, String phone2, String address, String parish)
     {
         this.pharmacyName = name;
@@ -51,6 +54,18 @@ public class Pharmacy {
 
     public int getId() {
         return id;
+    }
+
+    public String getPhone1() {
+        return phone1;
+    }
+
+    public String getPhone2() {
+        return phone2;
+    }
+
+    public String getParish() {
+        return parish;
     }
 
     public String getAddress() {

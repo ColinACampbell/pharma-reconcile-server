@@ -13,8 +13,22 @@ public class PDFCache {
     @OneToMany(mappedBy = "pdfCache")
     private List<PDFFile> files;
 
+    @ManyToOne()
+    @JoinColumn(name = "pharmacy_id")
+    private Pharmacy pharmacy;
+
     public int getId() {
         return id;
+    }
+
+
+    public void setPharmacy(Pharmacy pharmacy) {
+        this.pharmacy = pharmacy;
+    }
+
+
+    public Pharmacy getPharmacy() {
+        return pharmacy;
     }
 
     public void setDataAdded(long dataAdded) {
