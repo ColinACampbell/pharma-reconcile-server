@@ -7,6 +7,7 @@ import java.util.List;
 public class PDFCache {
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private int id;
     private long dataAdded;
 

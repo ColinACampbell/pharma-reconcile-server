@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 public interface PDFCacheRepo extends CrudRepository<PDFCache,Integer> {
     @Query(
             nativeQuery = true,
-            value = "select 1 from pdfcache where pharmacy_id = ?1 ORDER BY id DESC LIMIT 1"
+            value = "select * from pdfcache where pdfcache.pharmacy_id = ?1 ORDER BY pdfcache.id DESC LIMIT 1"
     )
     PDFCache findLatestCache(int pharmacyID);
 }
