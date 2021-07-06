@@ -64,6 +64,10 @@ public class ReconcileController {
         String client = (String) body.get("client");
         String sagicor = (String) body.get("sagicor");
 
+        // Add from and to period
+        long fromPeriodTimestamp =  (Long) body.get("fromPeriodTimeStamp");
+        long toPeriodTimestamp = (Long) body.get("toPeriodTimeStamp");
+
         // Get pure base64
         String clientBase64 = client.split(",")[1];
 
@@ -85,6 +89,8 @@ public class ReconcileController {
         // Create a PDF Cache row to represent the cache of both the client and sagicor file
         PDFCache pdfCache = new PDFCache();
         pdfCache.setDataAdded(timestamp.getTime());
+        pdfCache.setToPeriod(toPeriodTimestamp);
+        pdfCache.setFromPeriod(fromPeriodTimestamp);
 
         // Get pharmacy member to set pharmacy in the cache to be fetched later
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);

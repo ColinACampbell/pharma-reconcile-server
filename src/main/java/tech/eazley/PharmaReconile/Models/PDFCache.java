@@ -14,6 +14,12 @@ public class PDFCache {
     @OneToMany(mappedBy = "pdfCache")
     private List<PDFFile> files;
 
+
+    @Column(nullable = true)
+    private long fromPeriod;
+    @Column(nullable = true)
+    private long toPeriod;
+
     @ManyToOne()
     @JoinColumn(name = "pharmacy_id")
     private Pharmacy pharmacy;
@@ -36,11 +42,27 @@ public class PDFCache {
         this.dataAdded = dataAdded;
     }
 
+    public void setFromPeriod(long fromPeriod) {
+        this.fromPeriod = fromPeriod;
+    }
+
+    public void setToPeriod(long toPeriod) {
+        this.toPeriod = toPeriod;
+    }
+
     public long getDataAdded() {
         return dataAdded;
     }
 
     public List<PDFFile> getFiles() {
         return files;
+    }
+
+    public long getFromPeriod() {
+        return fromPeriod;
+    }
+
+    public long getToPeriod() {
+        return toPeriod;
     }
 }
