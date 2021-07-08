@@ -5,10 +5,20 @@ import java.util.List;
 
 @Entity
 public class PDFCache {
+
+    public interface PDFCacheProjection
+    {
+        Integer getId();
+        Long getFromPeriod();
+        Long getToPeriod();
+    }
+
     @Id
     @GeneratedValue
     @Column(name = "id")
     private int id;
+
+    @Column(nullable = true)
     private long dataAdded;
 
     @OneToMany(mappedBy = "pdfCache")

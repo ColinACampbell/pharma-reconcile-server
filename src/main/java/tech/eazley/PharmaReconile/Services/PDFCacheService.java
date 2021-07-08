@@ -7,6 +7,7 @@ import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Repositories.PDFCacheRepo;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class PDFCacheService {
@@ -17,6 +18,11 @@ public class PDFCacheService {
     public PDFCache getLatestCache(Pharmacy pharmacy)
     {
         return pdfCacheRepo.findLatestCache(pharmacy.getId());
+    }
+
+    public List<PDFCache.PDFCacheProjection> getAllCaches(Pharmacy pharmacy)
+    {
+        return pdfCacheRepo.findAllByPharmacy(pharmacy.getId());
     }
 
     // Save cache to the db

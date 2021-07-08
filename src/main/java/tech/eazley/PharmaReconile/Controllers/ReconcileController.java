@@ -151,4 +151,12 @@ public class ReconcileController {
         }
 
     }
+
+
+    @GetMapping("/sagicor/caches")
+    List<PDFCache.PDFCacheProjection> getPDFCaches(Authentication authentication)
+    {
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+        return pdfCacheService.getAllCaches(pharmacyMember.getPharmacy());
+    }
 }

@@ -7,6 +7,7 @@ import tech.eazley.PharmaReconile.Models.PDFCache;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface PDFCacheRepo extends CrudRepository<PDFCache,Integer> {
@@ -15,5 +16,11 @@ public interface PDFCacheRepo extends CrudRepository<PDFCache,Integer> {
             value = "select * from pdfcache where pdfcache.pharmacy_id = ?1 ORDER BY pdfcache.id DESC LIMIT 1"
     )
     PDFCache findLatestCache(int pharmacyID);
+
+    @Query(
+            nativeQuery = true,
+            value = "select id, from_period as fromPeriod, to_Period as toPeriod from pdfcache where pdfcache.pharmacy_id = ?1"
+    )
+    List<PDFCache.PDFCacheProjection> findAllByPharmacy(int pharmacyID);
 }
 
