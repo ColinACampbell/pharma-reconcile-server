@@ -22,7 +22,7 @@ import java.util.*;
 
 
 @RestController
-@RequestMapping("api/reconciliation-service")
+@RequestMapping("api/reconciliation")
 @CrossOrigin( origins = "http://localhost:3000/", allowCredentials = "true")
 public class ReconcileController {
 
@@ -57,7 +57,7 @@ public class ReconcileController {
         return pharmacyMemberService.findByUser(userDetails.getUser());
     }
 
-    @PostMapping("/pdf/upload")
+    @PostMapping("/sagicor")
     public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestBody HashMap<String,Object> body,
                                                             Authentication authentication)
     {
@@ -115,8 +115,8 @@ public class ReconcileController {
         return pdfService.extractData();
     }
 
-    @GetMapping(value = "/get-highlight/{fileName}.pdf")
-    private void getHighlight(@PathVariable String fileName,
+    @GetMapping(value = "/sagicor")
+    private void getHighlight(
                           HttpServletResponse response, Authentication authentication) {
 
 
@@ -139,7 +139,7 @@ public class ReconcileController {
             InputStream is = new ByteArrayInputStream(data);
             // copy it to response's OutputStream
 
-            response.setHeader("Content-Disposition", "attachment; filename="+fileName+".pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=demo.pdf");
             response.setContentType("application/pdf");
             IOUtils.copy(is,response.getOutputStream());
             //org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
