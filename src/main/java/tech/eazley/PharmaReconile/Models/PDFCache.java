@@ -11,6 +11,7 @@ public class PDFCache {
         Integer getId();
         Long getFromPeriod();
         Long getToPeriod();
+        Long getDateAdded();
     }
 
     @Id
@@ -19,7 +20,7 @@ public class PDFCache {
     private int id;
 
     @Column(nullable = true)
-    private long dataAdded;
+    private long dateAdded; // Use locally set time instead of server time
 
     @OneToMany(mappedBy = "pdfCache")
     private List<PDFFile> files;
@@ -48,8 +49,8 @@ public class PDFCache {
         return pharmacy;
     }
 
-    public void setDataAdded(long dataAdded) {
-        this.dataAdded = dataAdded;
+    public void setDateAdded(long dateAdded) {
+        this.dateAdded = dateAdded;
     }
 
     public void setFromPeriod(long fromPeriod) {
@@ -60,8 +61,8 @@ public class PDFCache {
         this.toPeriod = toPeriod;
     }
 
-    public long getDataAdded() {
-        return dataAdded;
+    public long getDateAdded() {
+        return dateAdded;
     }
 
     public List<PDFFile> getFiles() {

@@ -88,7 +88,7 @@ public class ReconcileController {
 
         // Create a PDF Cache row to represent the cache of both the client and sagicor file
         PDFCache pdfCache = new PDFCache();
-        pdfCache.setDataAdded(timestamp.getTime());
+        pdfCache.setDateAdded(timestamp.getTime());
         pdfCache.setToPeriod(toPeriodTimestamp);
         pdfCache.setFromPeriod(fromPeriodTimestamp);
 
