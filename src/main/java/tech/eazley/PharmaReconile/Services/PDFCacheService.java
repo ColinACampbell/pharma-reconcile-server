@@ -20,6 +20,11 @@ public class PDFCacheService {
         return pdfCacheRepo.findLatestCache(pharmacy.getId());
     }
 
+    public PDFCache getCacheByID(int cacheID)
+    {
+        return pdfCacheRepo.findById(cacheID);
+    }
+
     public List<PDFCache.PDFCacheProjection> getAllCaches(Pharmacy pharmacy)
     {
         return pdfCacheRepo.findAllByPharmacy(pharmacy.getId());

@@ -22,5 +22,7 @@ public interface PDFCacheRepo extends CrudRepository<PDFCache,Integer> {
             value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded from pdfcache where pdfcache.pharmacy_id = ?1"
     )
     List<PDFCache.PDFCacheProjection> findAllByPharmacy(int pharmacyID);
+
+    PDFCache findById(int id);
 }
 

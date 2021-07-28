@@ -1,8 +1,14 @@
 package tech.eazley.PharmaReconile.Controllers;
 
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -119,7 +125,6 @@ public class ReconcileController {
     private void getHighlight(
                           HttpServletResponse response, Authentication authentication) {
 
-
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
 
         PDFCache fileCache = pdfCacheService.getLatestCache(pharmacyMember.getPharmacy());
@@ -158,5 +163,17 @@ public class ReconcileController {
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
         return pdfCacheService.getAllCaches(pharmacyMember.getPharmacy());
+    }
+
+    @GetMapping("/sagicor/cache/{id}")
+    public List<DrugClaimResponseBody> getPDFCache(@PathVariable int id, Authentication authentication)
+    {
+        PDFCache cache = pdfCacheService.getCacheByID(id);
+        List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(cache,"client-data");
+        List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(cache,"sagicor-data");
+        pdfService.setClientData(clientFiles.get(0).getData());
+        pdfService.setSagicorData(sagicorFiles.get(0).getData());
+
+        return pdfService.extractData();
     }
 }
