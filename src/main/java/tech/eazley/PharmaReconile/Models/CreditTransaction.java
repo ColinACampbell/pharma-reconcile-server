@@ -15,9 +15,14 @@ public class CreditTransaction {
     @JoinColumn(name = "credit_account_id")
     private CreditAccount creditAccount;
 
-    final private String type;
-    final private Timestamp timestamp;
-    final private int transactionAmount;
+    private String type;
+    private Timestamp timestamp;
+    private int transactionAmount;
+
+    public CreditTransaction()
+    {
+
+    }
 
     public CreditTransaction(int transactionAmount,String type, Timestamp timestamp)
     {

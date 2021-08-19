@@ -35,6 +35,11 @@ public class PDFCache {
     @JoinColumn(name = "pharmacy_id")
     private Pharmacy pharmacy;
 
+    public PDFCache()
+    {
+
+    }
+
     public int getId() {
         return id;
     }

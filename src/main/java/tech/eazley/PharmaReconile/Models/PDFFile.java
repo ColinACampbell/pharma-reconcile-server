@@ -17,6 +17,11 @@ public class PDFFile {
     byte[] data;
 
 
+    public PDFFile()
+    {
+
+    }
+
     public void setPdfCache(PDFCache pdfCache) {
         this.pdfCache = pdfCache;
     }
