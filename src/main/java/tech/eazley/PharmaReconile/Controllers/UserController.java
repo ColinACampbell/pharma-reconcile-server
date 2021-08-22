@@ -118,6 +118,7 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(password));
 
         user.setRole("owner");
+
         userService.save(user);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(requestBody.getEmail(),requestBody.getPassword());
