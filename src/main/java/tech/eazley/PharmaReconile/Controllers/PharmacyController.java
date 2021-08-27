@@ -69,6 +69,7 @@ public class PharmacyController {
         creditService.saveCreditAccount(creditAccount);
         creditService.saveTransaction(creditTransaction,creditAccount);
 
+        // TODO Return a pharmacy with the correct status
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
