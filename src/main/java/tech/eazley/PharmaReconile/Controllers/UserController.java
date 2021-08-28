@@ -17,9 +17,11 @@ import tech.eazley.PharmaReconile.Models.AppUserDetails;
 import tech.eazley.PharmaReconile.Models.Http.AuthResponse;
 import tech.eazley.PharmaReconile.Models.Http.UserRequestBody;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
+import tech.eazley.PharmaReconile.Models.PharmacyMember;
 import tech.eazley.PharmaReconile.Models.User;
 import tech.eazley.PharmaReconile.Repositories.UserRepository;
 import tech.eazley.PharmaReconile.Services.AppUserDetailsService;
+import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
 import tech.eazley.PharmaReconile.Services.UserService;
 import tech.eazley.PharmaReconile.Util.JWTUtil;
@@ -42,6 +44,8 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private PharmacyService pharmacyService;
+    @Autowired
+    private PharmacyMemberService pharmacyMemberService;
     @Autowired
     private JWTUtil jwtUtil;
 
@@ -98,7 +102,11 @@ public class UserController {
 
         AppUserDetails appUserDetails = (AppUserDetails) appUserDetailsService.loadUserByUsername(userRequestBody.getEmail());
         String token = jwtUtil.generateToken(appUserDetails);
-        return new ResponseEntity<AuthResponse>(new AuthResponse(token), HttpStatus.OK);
+        PharmacyMember member = pharmacyMemberService.findByUser(appUserDetails.getUser());
+
+        System.out.println(member.getPharmacy());
+
+        return new ResponseEntity<AuthResponse>(new AuthResponse(token,member.getPharmacy()), HttpStatus.OK);
     }
 
     @PostMapping("/signup")
@@ -118,6 +126,7 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(password));
 
         user.setRole("owner");
+
         userService.save(user);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(requestBody.getEmail(),requestBody.getPassword());
@@ -132,7 +141,7 @@ public class UserController {
         AppUserDetails appUserDetails = (AppUserDetails) appUserDetailsService.loadUserByUsername(requestBody.getEmail());
         String token = jwtUtil.generateToken(appUserDetails);
 
-        return new ResponseEntity<>(new AuthResponse(token),HttpStatus.CREATED);
+        return new ResponseEntity<>(new AuthResponse(token,null),HttpStatus.CREATED);
     }
 
 

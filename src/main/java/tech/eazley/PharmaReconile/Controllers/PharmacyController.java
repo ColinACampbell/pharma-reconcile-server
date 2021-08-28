@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.*;
+import tech.eazley.PharmaReconile.Models.Http.AuthResponse;
 import tech.eazley.PharmaReconile.Services.CreditService;
 import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
@@ -38,7 +39,7 @@ public class PharmacyController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> registerPharmacy(@RequestBody Map<String,String> requestBody,Authentication authentication)
+    public AuthResponse registerPharmacy(@RequestBody Map<String,String> requestBody,Authentication authentication)
     {
         String pharmacyName = requestBody.get("pharmacy_name");
         String phone1 = requestBody.get("phone1");
@@ -61,14 +62,15 @@ public class PharmacyController {
         pharmacyMemberService.addMember(pharmacyMember);
 
         // Add credit
-        CreditAccount creditAccount = new CreditAccount();
-        creditAccount.setPharmacy(pharmacy);
+        //CreditAccount creditAccount = new CreditAccount();
+        //creditAccount.setPharmacy(pharmacy);
 
-        CreditTransaction creditTransaction = new CreditTransaction(1000,"Free Credit",new Timestamp(50000));
+        //CreditTransaction creditTransaction = new CreditTransaction(1000,"Free Credit",new Timestamp(50000));
 
-        creditService.saveCreditAccount(creditAccount);
-        creditService.saveTransaction(creditTransaction,creditAccount);
+        //creditService.saveCreditAccount(creditAccount);
+        //creditService.saveTransaction(creditTransaction,creditAccount);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        // Token is not consumed so it's not needed
+        return new AuthResponse("",pharmacy);
     }
 }
