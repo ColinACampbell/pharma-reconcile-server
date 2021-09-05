@@ -104,8 +104,6 @@ public class UserController {
         String token = jwtUtil.generateToken(appUserDetails);
         PharmacyMember member = pharmacyMemberService.findByUser(appUserDetails.getUser());
 
-        System.out.println(member.getPharmacy());
-
         return new ResponseEntity<AuthResponse>(new AuthResponse(token,member.getPharmacy()), HttpStatus.OK);
     }
 
