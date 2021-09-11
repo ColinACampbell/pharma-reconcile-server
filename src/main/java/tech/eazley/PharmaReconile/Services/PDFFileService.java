@@ -15,9 +15,9 @@ public class PDFFileService {
     private PDFFileRepo pdfFileRepo;
 
     @Transactional
-    public List<PDFFile> getByPDFCacheAndType(PDFCache pdfCache, String type)
+    public List<PDFFile> getByPDFCacheAndType(PDFCache sagicorPdfCache, String type)
     {
-        return pdfFileRepo.findByPdfCacheAndFileType(pdfCache,type);
+        return pdfFileRepo.findByPdfCacheAndFileType(sagicorPdfCache,type);
     }
 
     public void saveFile(PDFFile file)
