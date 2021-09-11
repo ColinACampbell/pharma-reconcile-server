@@ -1,31 +1,22 @@
 package tech.eazley.PharmaReconile.Controllers;
 
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.*;
 import tech.eazley.PharmaReconile.Services.PDFCacheService;
 import tech.eazley.PharmaReconile.Services.PDFFileService;
 import tech.eazley.PharmaReconile.Services.PDFService;
 import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
+import tech.eazley.PharmaReconile.Util.ConverterUtil;
 import tech.eazley.PharmaReconile.Utils.PDFAnnotator;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
-
 
 @RestController
 @RequestMapping("api/reconciliation")
@@ -64,9 +55,11 @@ public class ReconcileController {
     }
 
     @PostMapping("/sagicor")
-    public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestBody HashMap<String,Object> body,
+    public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestParam String vendor,
+                                                            @RequestBody HashMap<String,Object> body,
                                                             Authentication authentication)
     {
+
         String client = (String) body.get("client");
         String sagicor = (String) body.get("sagicor");
 
@@ -81,7 +74,6 @@ public class ReconcileController {
         // Encode base64 to bytes
         byte[] clientData = Base64.getDecoder().decode(clientBase64);
         byte[] sagicorData = Base64.getDecoder().decode(sagicorBase64);
-
         PDFFile sagicorPDFFile = new PDFFile();
         PDFFile clientFile = new PDFFile();
         sagicorPDFFile.setData(sagicorData);
@@ -102,6 +94,8 @@ public class ReconcileController {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
 
         pdfCache.setPharmacy(pharmacyMember.getPharmacy());
+        pdfCache.setVendor(ConverterUtil.stringToVendor(vendor));
+        pdfCache.setProvider(Provider.SAGICOR);
 
         // Save this case to the db
         pdfCacheService.saveCache(pdfCache);
@@ -118,7 +112,10 @@ public class ReconcileController {
         pdfService.setClientData(clientData);
         pdfService.setSagicorData(sagicorData);
 
-        return pdfService.extractData();
+        if (vendor.equals("pharmacy-works"))
+            return pdfService.extractData();
+
+        return null;
     }
 
     @GetMapping(value = "/sagicor")

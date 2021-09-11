@@ -6,7 +6,6 @@ import tech.eazley.PharmaReconile.Models.PDFCache;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Repositories.PDFCacheRepo;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -31,9 +30,9 @@ public class PDFCacheService {
     }
 
     // Save cache to the db
-    public void saveCache(PDFCache pdfCache)
+    public void saveCache(PDFCache sagicorPdfCache)
     {
-        pdfCacheRepo.save(pdfCache);
+        pdfCacheRepo.save(sagicorPdfCache);
     }
 
 }
