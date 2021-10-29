@@ -112,12 +112,27 @@ public class ReconcileController {
         pdfService.setClientData(clientData);
         pdfService.setSagicorData(sagicorData);
 
-        // Add up the payable and chargeable here
-
+        // Add up the payable and charged here
+        ArrayList<DrugClaimResponseBody> claimResponseBodies = new ArrayList<>();
         if (vendor.equals("pharmacy-works"))
-            return pdfService.extractData();
+        {
+            double totalCharged = 0;
+            double totalPayable = 0;
+            claimResponseBodies = pdfService.extractData();
+            for (DrugClaimResponseBody drug: claimResponseBodies) {
+                totalCharged += drug.getCharged();
+                totalPayable += drug.getPayable();
+            }
 
-        return null;
+            System.out.println("Total Charged "+totalCharged);
+            System.out.println("Total Payable "+totalPayable);
+
+            pdfCache.setCharged(totalCharged);
+            pdfCache.setPayable(totalPayable);
+            pdfCacheService.saveCache(pdfCache);
+        }
+
+        return claimResponseBodies;
     }
 
     @GetMapping(value = "/sagicor")

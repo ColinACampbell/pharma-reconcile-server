@@ -43,6 +43,12 @@ public class PDFCache {
     @Enumerated(EnumType.STRING)
     Provider provider;
 
+    @Column(nullable = true)
+    private double payable;
+
+    @Column(nullable = true)
+    private double charged;
+
     public PDFCache() {
 
     }
@@ -78,6 +84,22 @@ public class PDFCache {
 
     public void setProvider(Provider provider) {
         this.provider = provider;
+    }
+
+    public void setCharged(double charged) {
+        this.charged = charged;
+    }
+
+    public void setPayable(double payable) {
+        this.payable = payable;
+    }
+
+    public double getCharged() {
+        return charged;
+    }
+
+    public double getPayable() {
+        return payable;
     }
 
     public long getDateAdded() {
