@@ -42,7 +42,6 @@ public class PartnerController {
     @PostMapping("/")
     ResponseEntity<?> savePartner(@RequestBody Partner partner)
     {
-        System.out.println(partner.getEmail());
         if (pharmaPartnerService.findByEmail(partner.getEmail()) != null)
             return new ResponseEntity<>(null,HttpStatus.CONFLICT);
 

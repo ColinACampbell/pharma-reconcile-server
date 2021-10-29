@@ -112,6 +112,8 @@ public class ReconcileController {
         pdfService.setClientData(clientData);
         pdfService.setSagicorData(sagicorData);
 
+        // Add up the payable and chargeable here
+
         if (vendor.equals("pharmacy-works"))
             return pdfService.extractData();
 

@@ -1,14 +1,5 @@
 package tech.eazley.PharmaReconile.Models.Http.PartnerProgram;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-import tech.eazley.PharmaReconile.Models.CreditAccount;
-import tech.eazley.PharmaReconile.Models.Pharmacy;
-import tech.eazley.PharmaReconile.Models.User;
-import tech.eazley.PharmaReconile.Repositories.UserRepository;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -26,7 +17,6 @@ public class Partner {
 
     public Partner()
     {}
-
 
     public Partner(String email,String phone,String phone2,String pharmacyName,String pharmacyBranch) {
         this.email = email;
