@@ -17,6 +17,9 @@ public class PDFCache {
         Long getFromPeriod();
         Long getToPeriod();
         Long getDateAdded();
+        String getProvider();
+        float getCharged();
+        float getPayable();
     }
 
     @Column(nullable = true)

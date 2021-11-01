@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.eazley.PharmaReconile.Models.PDFCache;
 import tech.eazley.PharmaReconile.Models.Pharmacy;
+import tech.eazley.PharmaReconile.Models.Provider;
 import tech.eazley.PharmaReconile.Repositories.PDFCacheRepo;
+import tech.eazley.PharmaReconile.Util.ConverterUtil;
 
 import java.util.List;
 
@@ -24,9 +26,9 @@ public class PDFCacheService {
         return pdfCacheRepo.findById(cacheID);
     }
 
-    public List<PDFCache.PDFCacheProjection> getAllCaches(Pharmacy pharmacy)
+    public List<PDFCache.PDFCacheProjection> getAllCachesByPharmacyAndProvider(Pharmacy pharmacy, Provider provider)
     {
-        return pdfCacheRepo.findAllByPharmacy(pharmacy.getId());
+        return pdfCacheRepo.findAllByPharmacyAndProvider(pharmacy.getId(), ConverterUtil.providerToString(provider));
     }
 
     // Save cache to the db

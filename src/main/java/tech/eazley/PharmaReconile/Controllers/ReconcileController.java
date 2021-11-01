@@ -40,19 +40,18 @@ public class ReconcileController {
     @Autowired
     PharmacyMemberService pharmacyMemberService;
 
-    @ResponseBody
-    @GetMapping("/test")
-    public ArrayList<DrugClaimResponseBody> test()
-    {
-        return pdfService.extractData();
-    }
-
-
     private PharmacyMember getPharmacyMember(Authentication authentication)
     {
         AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
         return pharmacyMemberService.findByUser(userDetails.getUser());
     }
+
+    @GetMapping("/")
+    public ArrayList<PDFCache> getReconciliations()
+    {
+        return new ArrayList<>();
+    }
+
 
     @PostMapping("/sagicor")
     public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestParam String vendor,
@@ -135,6 +134,7 @@ public class ReconcileController {
         return claimResponseBodies;
     }
 
+    // Downloads the document of highlighted clients
     @GetMapping(value = "/sagicor")
     private void getHighlight(
                           HttpServletResponse response, Authentication authentication) {
@@ -176,7 +176,7 @@ public class ReconcileController {
     List<PDFCache.PDFCacheProjection> getPDFCaches(Authentication authentication)
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
-        return pdfCacheService.getAllCaches(pharmacyMember.getPharmacy());
+        return pdfCacheService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
 
     @GetMapping("/sagicor/cache/{id}")
