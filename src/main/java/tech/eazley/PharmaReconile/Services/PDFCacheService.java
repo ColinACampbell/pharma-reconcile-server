@@ -31,6 +31,11 @@ public class PDFCacheService {
         return pdfCacheRepo.findAllByPharmacyAndProvider(pharmacy.getId(), ConverterUtil.providerToString(provider));
     }
 
+    public List<PDFCache.PDFCacheProjection> getAllCachesByPharmacy(Pharmacy pharmacy)
+    {
+        return pdfCacheRepo.findAllByPharmacy(pharmacy.getId());
+    }
+
     // Save cache to the db
     public void saveCache(PDFCache sagicorPdfCache)
     {

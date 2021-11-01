@@ -47,9 +47,10 @@ public class ReconcileController {
     }
 
     @GetMapping("/")
-    public ArrayList<PDFCache> getReconciliations()
+    public List<PDFCache.PDFCacheProjection> getAllReconciliations(Authentication authentication)
     {
-        return new ArrayList<>();
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+        return pdfCacheService.getAllCachesByPharmacy(pharmacyMember.getPharmacy());
     }
 
 
@@ -173,7 +174,7 @@ public class ReconcileController {
 
 
     @GetMapping("/sagicor/caches")
-    List<PDFCache.PDFCacheProjection> getPDFCaches(Authentication authentication)
+    List<PDFCache.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
         return pdfCacheService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
