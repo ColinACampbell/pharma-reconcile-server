@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) throws Exception {
         http.userDetailsService(userDetailsService);
         http.authorizeRequests()
-                .antMatchers("/api/user/*")
+                .antMatchers("/api/user/*","/api/partner/*")
                 .permitAll().and().csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.cors();

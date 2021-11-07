@@ -6,18 +6,21 @@ import java.util.List;
 @Entity
 public class PDFCache {
 
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
+
     public interface PDFCacheProjection
     {
         Integer getId();
         Long getFromPeriod();
         Long getToPeriod();
         Long getDateAdded();
+        String getProvider();
+        float getCharged();
+        float getPayable();
     }
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private int id;
 
     @Column(nullable = true)
     private long dateAdded; // Use locally set time instead of server time
@@ -35,15 +38,27 @@ public class PDFCache {
     @JoinColumn(name = "pharmacy_id")
     private Pharmacy pharmacy;
 
-    public PDFCache()
-    {
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    Vendor vendor;
+
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    Provider provider;
+
+    @Column(nullable = true)
+    private double payable;
+
+    @Column(nullable = true)
+    private double charged;
+
+    public PDFCache() {
 
     }
 
     public int getId() {
         return id;
     }
-
 
     public void setPharmacy(Pharmacy pharmacy) {
         this.pharmacy = pharmacy;
@@ -66,6 +81,30 @@ public class PDFCache {
         this.toPeriod = toPeriod;
     }
 
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public void setCharged(double charged) {
+        this.charged = charged;
+    }
+
+    public void setPayable(double payable) {
+        this.payable = payable;
+    }
+
+    public double getCharged() {
+        return charged;
+    }
+
+    public double getPayable() {
+        return payable;
+    }
+
     public long getDateAdded() {
         return dateAdded;
     }
@@ -80,5 +119,13 @@ public class PDFCache {
 
     public long getToPeriod() {
         return toPeriod;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
     }
 }
