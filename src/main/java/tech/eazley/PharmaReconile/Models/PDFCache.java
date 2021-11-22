@@ -52,6 +52,9 @@ public class PDFCache {
     @Column(nullable = true)
     private double charged;
 
+    @Column(nullable = true)
+    private double sagicorTotals; // transaction and gct included
+
     public PDFCache() {
 
     }
@@ -97,12 +100,20 @@ public class PDFCache {
         this.payable = payable;
     }
 
+    public void setSagicorTotals(double sagicorTotals) {
+        this.sagicorTotals = sagicorTotals;
+    }
+
     public double getCharged() {
         return charged;
     }
 
     public double getPayable() {
         return payable;
+    }
+
+    public double getSagicorTotals() {
+        return sagicorTotals;
     }
 
     public long getDateAdded() {

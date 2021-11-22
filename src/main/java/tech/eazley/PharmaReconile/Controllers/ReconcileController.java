@@ -55,7 +55,7 @@ public class ReconcileController {
 
 
     @PostMapping("/sagicor")
-    public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestParam String vendor,
+    public ArrayList<DrugClaimResponseBody> sagicor(@RequestParam String vendor,
                                                             @RequestBody HashMap<String,Object> body,
                                                             Authentication authentication)
     {
@@ -118,24 +118,23 @@ public class ReconcileController {
         {
             double totalCharged = 0;
             double totalPayable = 0;
-            claimResponseBodies = pdfService.extractData();
+            claimResponseBodies = pdfService.extractPharmacyWorksClaims();
+
             for (DrugClaimResponseBody drug: claimResponseBodies) {
                 totalCharged += drug.getCharged();
                 totalPayable += drug.getPayable();
             }
 
-            System.out.println("Total Charged "+totalCharged);
-            System.out.println("Total Payable "+totalPayable);
-
             pdfCache.setCharged(totalCharged);
             pdfCache.setPayable(totalPayable);
+            pdfCache.setSagicorTotals(pdfService.getSagicorClaimTotals());
             pdfCacheService.saveCache(pdfCache);
         }
 
         return claimResponseBodies;
     }
 
-    // Downloads the document of highlighted clients
+    // TODO : Get Highlight for different vendors
     @GetMapping(value = "/sagicor")
     private void getHighlight(
                           HttpServletResponse response, Authentication authentication) {
@@ -152,7 +151,7 @@ public class ReconcileController {
         pdfService.setSagicorData(sagicorFiles.get(0).getData());
         pdfService.setClientData(clientFiles.get(0).getData());
 
-        byte[] data = pdfService.highlightReferences(pdfService.extractData());
+        byte[] data = pdfService.highlightReferences(pdfService.extractPharmacyWorksClaims());
         System.out.println("Result data length "+data.length);
         try {
             // get your file as InputStream
@@ -172,7 +171,6 @@ public class ReconcileController {
 
     }
 
-
     @GetMapping("/sagicor/caches")
     List<PDFCache.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
     {
@@ -180,15 +178,18 @@ public class ReconcileController {
         return pdfCacheService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
 
+
+    // TODO : Get Type of vendor and return the data based on that
     @GetMapping("/sagicor/cache/{id}")
     public List<DrugClaimResponseBody> getPDFCache(@PathVariable int id, Authentication authentication)
     {
         PDFCache cache = pdfCacheService.getCacheByID(id);
+
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(cache,"client-data");
         List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(cache,"sagicor-data");
         pdfService.setClientData(clientFiles.get(0).getData());
         pdfService.setSagicorData(sagicorFiles.get(0).getData());
 
-        return pdfService.extractData();
+        return pdfService.extractPharmacyWorksClaims();
     }
 }

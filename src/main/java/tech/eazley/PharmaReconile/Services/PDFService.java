@@ -85,7 +85,32 @@ public class PDFService {
         return drugClaims;
     }
 
-    public ArrayList<String> readClientDocument() throws IOException {
+    public Double getSagicorClaimTotals()
+    {
+        try {
+            String[] lines = readPDF(sagicorData);
+
+            for (String line : lines)
+            {
+                if (line.contains("TOTALS PAYMENT(S):"))
+                {
+                    String[] results = line.split(" ");
+                    double paid = Double.parseDouble(results[2].replaceAll(",",""));
+                    double transactionFee = Double.parseDouble(results[5].replaceAll(",",""));
+                    double GCT = Double.parseDouble(results[7].replaceAll(",",""));
+                    return paid + transactionFee + GCT;
+                }
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return 0.0;
+    }
+
+
+    public ArrayList<String> readPharmacyWorksDocument() throws IOException {
 
         String[] lines = readPDF(clientData);
         ArrayList<String> drugLines = new ArrayList<>();
@@ -105,7 +130,7 @@ public class PDFService {
         return drugLines;
     }
 
-    public ArrayList<DrugClaimResponseBody> extractData()  {
+    public ArrayList<DrugClaimResponseBody> extractPharmacyWorksClaims()  {
 
         //Pattern pattern = Pattern.compile("(\\b[A-Z]+(?:\\s+[A-Z]+[^A-Za-z0-9])*\\b)");
 
@@ -113,7 +138,7 @@ public class PDFService {
         ArrayList<String> purchases = new ArrayList<>();
 
         try {
-            purchases = readClientDocument();
+            purchases = readPharmacyWorksDocument();
             claims = readSagicorDocument();
         } catch (Exception e)
         {
