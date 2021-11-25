@@ -18,13 +18,13 @@ public interface PDFCacheRepo extends CrudRepository<PDFCache,Integer> {
 
     @Query(
             nativeQuery = true,
-            value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded, provider, charged, payable from pdfcache where pdfcache.pharmacy_id = ?1 and provider = ?2"
+            value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded, sagicor_totals as sagicorTotals, provider, charged, payable from pdfcache where pdfcache.pharmacy_id = ?1 and provider = ?2"
     )
     List<PDFCache.PDFCacheProjection> findAllByPharmacyAndProvider(int pharmacyID, String provider);
 
     @Query(
             nativeQuery = true,
-            value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded, provider, charged, payable from pdfcache where pdfcache.pharmacy_id = ?1"
+            value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded, sagicor_totals as sagicorTotals, provider, charged, payable from pdfcache where pdfcache.pharmacy_id = ?1"
     )
     List<PDFCache.PDFCacheProjection> findAllByPharmacy(int pharmacyID);
 

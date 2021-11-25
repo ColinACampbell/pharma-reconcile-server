@@ -20,6 +20,7 @@ public class PDFCache {
         String getProvider();
         float getCharged();
         float getPayable();
+        float getSagicorTotals();
     }
 
     @Column(nullable = true)

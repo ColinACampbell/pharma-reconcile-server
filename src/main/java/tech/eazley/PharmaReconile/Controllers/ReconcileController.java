@@ -6,6 +6,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.*;
+import tech.eazley.PharmaReconile.Models.Http.ReconciliationResponse;
 import tech.eazley.PharmaReconile.Services.PDFCacheService;
 import tech.eazley.PharmaReconile.Services.PDFFileService;
 import tech.eazley.PharmaReconile.Services.PDFService;
@@ -55,9 +56,9 @@ public class ReconcileController {
 
 
     @PostMapping("/sagicor")
-    public ArrayList<DrugClaimResponseBody> sagicor(@RequestParam String vendor,
-                                                            @RequestBody HashMap<String,Object> body,
-                                                            Authentication authentication)
+    public ReconciliationResponse sagicor(@RequestParam String vendor,
+                                          @RequestBody HashMap<String,Object> body,
+                                          Authentication authentication)
     {
 
         String client = (String) body.get("client");
@@ -114,6 +115,8 @@ public class ReconcileController {
 
         // Add up the payable and charged here
         ArrayList<DrugClaimResponseBody> claimResponseBodies = new ArrayList<>();
+        double claimsTotals = pdfService.getSagicorClaimTotals();
+
         if (vendor.equals("pharmacy-works"))
         {
             double totalCharged = 0;
@@ -127,11 +130,11 @@ public class ReconcileController {
 
             pdfCache.setCharged(totalCharged);
             pdfCache.setPayable(totalPayable);
-            pdfCache.setSagicorTotals(pdfService.getSagicorClaimTotals());
+            pdfCache.setSagicorTotals(claimsTotals);
             pdfCacheService.saveCache(pdfCache);
         }
 
-        return claimResponseBodies;
+        return new ReconciliationResponse(claimResponseBodies,claimsTotals);
     }
 
     // TODO : Get Highlight for different vendors
