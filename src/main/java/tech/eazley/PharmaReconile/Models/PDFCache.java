@@ -48,13 +48,13 @@ public class PDFCache {
     Provider provider;
 
     @Column(nullable = true)
-    private double payable;
+    private float payable;
 
     @Column(nullable = true)
-    private double charged;
+    private float charged;
 
     @Column(nullable = true)
-    private double sagicorTotals; // transaction and gct included
+    private float sagicorTotals; // transaction and gct included
 
     public PDFCache() {
 
@@ -93,27 +93,27 @@ public class PDFCache {
         this.provider = provider;
     }
 
-    public void setCharged(double charged) {
+    public void setCharged(float charged) {
         this.charged = charged;
     }
 
-    public void setPayable(double payable) {
+    public void setPayable(float payable) {
         this.payable = payable;
     }
 
-    public void setSagicorTotals(double sagicorTotals) {
+    public void setSagicorTotals(float sagicorTotals) {
         this.sagicorTotals = sagicorTotals;
     }
 
-    public double getCharged() {
+    public float getCharged() {
         return charged;
     }
 
-    public double getPayable() {
+    public float getPayable() {
         return payable;
     }
 
-    public double getSagicorTotals() {
+    public float getSagicorTotals() {
         return sagicorTotals;
     }
 

@@ -85,7 +85,7 @@ public class PDFService {
         return drugClaims;
     }
 
-    public Double getSagicorClaimTotals()
+    public float getSagicorClaimTotals()
     {
         try {
             String[] lines = readPDF(sagicorData);
@@ -95,9 +95,9 @@ public class PDFService {
                 if (line.contains("TOTALS PAYMENT(S):"))
                 {
                     String[] results = line.split(" ");
-                    double paid = Double.parseDouble(results[2].replaceAll(",",""));
-                    double transactionFee = Double.parseDouble(results[5].replaceAll(",",""));
-                    double GCT = Double.parseDouble(results[7].replaceAll(",",""));
+                    float paid = Float.parseFloat(results[2].replaceAll(",",""));
+                    float transactionFee = Float.parseFloat(results[5].replaceAll(",",""));
+                    float GCT = Float.parseFloat(results[7].replaceAll(",",""));
                     return paid + transactionFee + GCT;
                 }
             }
@@ -106,7 +106,7 @@ public class PDFService {
             e.printStackTrace();
         }
 
-        return 0.0;
+        return 0;
     }
 
 

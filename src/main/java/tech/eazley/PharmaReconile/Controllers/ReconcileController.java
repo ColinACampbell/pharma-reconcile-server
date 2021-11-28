@@ -115,12 +115,12 @@ public class ReconcileController {
 
         // Add up the payable and charged here
         ArrayList<DrugClaimResponseBody> claimResponseBodies = new ArrayList<>();
-        double claimsTotals = pdfService.getSagicorClaimTotals();
+        float claimsTotals = pdfService.getSagicorClaimTotals();
 
         if (vendor.equals("pharmacy-works"))
         {
-            double totalCharged = 0;
-            double totalPayable = 0;
+            float totalCharged = 0;
+            float totalPayable = 0;
             claimResponseBodies = pdfService.extractPharmacyWorksClaims();
 
             for (DrugClaimResponseBody drug: claimResponseBodies) {
