@@ -55,6 +55,7 @@ public class ReconcileController {
     }
 
 
+    // Create a reconciliation for sagicor
     @PostMapping("/sagicor")
     public ReconciliationResponse sagicor(@RequestParam String vendor,
                                           @RequestBody HashMap<String,Object> body,
