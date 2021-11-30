@@ -12,6 +12,7 @@ import tech.eazley.PharmaReconile.Services.PDFFileService;
 import tech.eazley.PharmaReconile.Services.PDFService;
 import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Util.ConverterUtil;
+import tech.eazley.PharmaReconile.Util.ObjectMapperUtil;
 import tech.eazley.PharmaReconile.Utils.PDFAnnotator;
 
 import javax.servlet.http.HttpServletResponse;
@@ -76,13 +77,14 @@ public class ReconcileController {
         // Encode base64 to bytes
         byte[] clientData = Base64.getDecoder().decode(clientBase64);
         byte[] sagicorData = Base64.getDecoder().decode(sagicorBase64);
-        PDFFile sagicorPDFFile = new PDFFile();
-        PDFFile clientFile = new PDFFile();
-        sagicorPDFFile.setData(sagicorData);
-        clientFile.setData(clientData);
 
-        clientFile.setFileType("client-data");
-        sagicorPDFFile.setFileType("sagicor-data");
+        //PDFFile sagicorPDFFile = new PDFFile();
+        //PDFFile clientFile = new PDFFile();
+        //sagicorPDFFile.setData(sagicorData);
+        //clientFile.setData(clientData);
+
+        //clientFile.setFileType("client-data");
+        //sagicorPDFFile.setFileType("sagicor-data");
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -103,20 +105,21 @@ public class ReconcileController {
         pdfCacheService.saveCache(pdfCache);
 
         // Set the parent table / object
-        clientFile.setPdfCache(pdfCache);
-        sagicorPDFFile.setPdfCache(pdfCache);
+        //clientFile.setPdfCache(pdfCache);
+        //sagicorPDFFile.setPdfCache(pdfCache);
 
         // Save the files to db for caching
-        pdfFileService.saveFile(sagicorPDFFile);
-        pdfFileService.saveFile(clientFile);
+        //pdfFileService.saveFile(sagicorPDFFile);
+        //pdfFileService.saveFile(clientFile);
 
         // Set the needed data
         pdfService.setClientData(clientData);
         pdfService.setSagicorData(sagicorData);
 
         // Add up the payable and charged here
-        ArrayList<DrugClaimResponseBody> claimResponseBodies = new ArrayList<>();
+        ArrayList<DrugClaim> claimResponseBodies = new ArrayList<>();
         float claimsTotals = pdfService.getSagicorClaimTotals();
+
 
         if (vendor.equals("pharmacy-works"))
         {
@@ -124,7 +127,7 @@ public class ReconcileController {
             float totalPayable = 0;
             claimResponseBodies = pdfService.extractPharmacyWorksClaims();
 
-            for (DrugClaimResponseBody drug: claimResponseBodies) {
+            for (DrugClaim drug: claimResponseBodies) {
                 totalCharged += drug.getCharged();
                 totalPayable += drug.getPayable();
             }
@@ -132,6 +135,10 @@ public class ReconcileController {
             pdfCache.setCharged(totalCharged);
             pdfCache.setPayable(totalPayable);
             pdfCache.setSagicorTotals(claimsTotals);
+
+            String drugClaimsToJson = ObjectMapperUtil.drugClaimsToJson(claimResponseBodies);
+
+            pdfCache.setReconciliationDetails(drugClaimsToJson);
             pdfCacheService.saveCache(pdfCache);
         }
 
@@ -185,7 +192,7 @@ public class ReconcileController {
 
     // TODO : Get Type of vendor and return the data based on that
     @GetMapping("/sagicor/cache/{id}")
-    public List<DrugClaimResponseBody> getPDFCache(@PathVariable int id, Authentication authentication)
+    public List<DrugClaim> getPDFCache(@PathVariable int id, Authentication authentication)
     {
         PDFCache cache = pdfCacheService.getCacheByID(id);
 

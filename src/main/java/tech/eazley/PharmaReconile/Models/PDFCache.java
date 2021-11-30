@@ -29,11 +29,14 @@ public class PDFCache {
     @OneToMany(mappedBy = "pdfCache")
     private List<PDFFile> files;
 
-
     @Column(nullable = true)
     private long fromPeriod;
     @Column(nullable = true)
     private long toPeriod;
+
+    @Lob
+    @Column(nullable = true)
+    private String reconciliationDetails;
 
     @ManyToOne()
     @JoinColumn(name = "pharmacy_id")
@@ -139,5 +142,13 @@ public class PDFCache {
 
     public Vendor getVendor() {
         return vendor;
+    }
+
+    public void setReconciliationDetails(String reconciliationDetails) {
+        this.reconciliationDetails = reconciliationDetails;
+    }
+
+    public String getReconciliationDetails() {
+        return reconciliationDetails;
     }
 }

@@ -1,17 +1,18 @@
 package tech.eazley.PharmaReconile.Models.Http;
 
+import tech.eazley.PharmaReconile.Models.DrugClaim;
 import tech.eazley.PharmaReconile.Models.DrugClaimResponseBody;
 
 import java.util.ArrayList;
 
 public class ReconciliationResponse {
 
-    public ArrayList<DrugClaimResponseBody> drugClaimResponseBodies;
+    public ArrayList<DrugClaim> drugClaimResponseBodies;
     public double providerTotals = 0;
 
-    public ReconciliationResponse(ArrayList<DrugClaimResponseBody> drugClaimResponseBodies, double providerTotals)
+    public ReconciliationResponse(ArrayList<DrugClaim> DrugClaim, double providerTotals)
     {
-        this.drugClaimResponseBodies = drugClaimResponseBodies;
+        this.drugClaimResponseBodies = DrugClaim;
         this.providerTotals = providerTotals;
     }
 
@@ -23,11 +24,11 @@ public class ReconciliationResponse {
         return providerTotals;
     }
 
-    public void setDrugClaimResponseBodies(ArrayList<DrugClaimResponseBody> drugClaimResponseBodies) {
+    public void setDrugClaimResponseBodies(ArrayList<DrugClaim> drugClaimResponseBodies) {
         this.drugClaimResponseBodies = drugClaimResponseBodies;
     }
 
-    public ArrayList<DrugClaimResponseBody> getDrugClaimResponseBodies() {
+    public ArrayList<DrugClaim> getDrugClaimResponseBodies() {
         return drugClaimResponseBodies;
     }
 }
