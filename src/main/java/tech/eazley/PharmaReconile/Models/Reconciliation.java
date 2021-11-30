@@ -4,7 +4,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class PDFCache {
+@Table(name = "reconciliations")
+public class Reconciliation {
 
     @Id
     @GeneratedValue
@@ -26,7 +27,7 @@ public class PDFCache {
     @Column(nullable = true)
     private long dateAdded; // Use locally set time instead of server time
 
-    @OneToMany(mappedBy = "pdfCache")
+    @OneToMany(mappedBy = "reconciliation")
     private List<PDFFile> files;
 
     @Column(nullable = true)
@@ -59,7 +60,7 @@ public class PDFCache {
     @Column(nullable = true)
     private float sagicorTotals; // transaction and gct included
 
-    public PDFCache() {
+    public Reconciliation() {
 
     }
 

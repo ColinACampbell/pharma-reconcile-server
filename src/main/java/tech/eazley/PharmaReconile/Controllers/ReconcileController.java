@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.*;
 import tech.eazley.PharmaReconile.Models.Http.ReconciliationResponse;
-import tech.eazley.PharmaReconile.Services.PDFCacheService;
+import tech.eazley.PharmaReconile.Services.ReconciliationService;
 import tech.eazley.PharmaReconile.Services.PDFFileService;
 import tech.eazley.PharmaReconile.Services.PDFService;
 import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
@@ -34,7 +34,7 @@ public class ReconcileController {
     ResourceLoader resourceLoader;
 
     @Autowired
-    private PDFCacheService pdfCacheService;
+    private ReconciliationService reconciliationService;
 
     @Autowired
      PDFFileService pdfFileService;
@@ -49,10 +49,10 @@ public class ReconcileController {
     }
 
     @GetMapping("/")
-    public List<PDFCache.PDFCacheProjection> getAllReconciliations(Authentication authentication)
+    public List<Reconciliation.PDFCacheProjection> getAllReconciliations(Authentication authentication)
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
-        return pdfCacheService.getAllCachesByPharmacy(pharmacyMember.getPharmacy());
+        return reconciliationService.getAllCachesByPharmacy(pharmacyMember.getPharmacy());
     }
 
 
@@ -89,20 +89,20 @@ public class ReconcileController {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         // Create a PDF Cache row to represent the cache of both the client and sagicor file
-        PDFCache pdfCache = new PDFCache();
-        pdfCache.setDateAdded(timestamp.getTime());
-        pdfCache.setToPeriod(toPeriodTimestamp);
-        pdfCache.setFromPeriod(fromPeriodTimestamp);
+        Reconciliation reconciliation = new Reconciliation();
+        reconciliation.setDateAdded(timestamp.getTime());
+        reconciliation.setToPeriod(toPeriodTimestamp);
+        reconciliation.setFromPeriod(fromPeriodTimestamp);
 
         // Get pharmacy member to set pharmacy in the cache to be fetched later
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
 
-        pdfCache.setPharmacy(pharmacyMember.getPharmacy());
-        pdfCache.setVendor(ConverterUtil.stringToVendor(vendor));
-        pdfCache.setProvider(Provider.SAGICOR);
+        reconciliation.setPharmacy(pharmacyMember.getPharmacy());
+        reconciliation.setVendor(ConverterUtil.stringToVendor(vendor));
+        reconciliation.setProvider(Provider.SAGICOR);
 
         // Save this case to the db
-        pdfCacheService.saveCache(pdfCache);
+        reconciliationService.saveCache(reconciliation);
 
         // Set the parent table / object
         //clientFile.setPdfCache(pdfCache);
@@ -132,14 +132,14 @@ public class ReconcileController {
                 totalPayable += drug.getPayable();
             }
 
-            pdfCache.setCharged(totalCharged);
-            pdfCache.setPayable(totalPayable);
-            pdfCache.setSagicorTotals(claimsTotals);
+            reconciliation.setCharged(totalCharged);
+            reconciliation.setPayable(totalPayable);
+            reconciliation.setSagicorTotals(claimsTotals);
 
             String drugClaimsToJson = ObjectMapperUtil.drugClaimsToJson(claimResponseBodies);
 
-            pdfCache.setReconciliationDetails(drugClaimsToJson);
-            pdfCacheService.saveCache(pdfCache);
+            reconciliation.setReconciliationDetails(drugClaimsToJson);
+            reconciliationService.saveCache(reconciliation);
         }
 
         return new ReconciliationResponse(claimResponseBodies,claimsTotals);
@@ -152,7 +152,7 @@ public class ReconcileController {
 
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
 
-        PDFCache fileCache = pdfCacheService.getLatestCache(pharmacyMember.getPharmacy());
+        Reconciliation fileCache = reconciliationService.getLatestCache(pharmacyMember.getPharmacy());
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(fileCache,"client-data");
         List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(fileCache,"sagicor-data");
 
@@ -183,10 +183,10 @@ public class ReconcileController {
     }
 
     @GetMapping("/sagicor/caches")
-    List<PDFCache.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
+    List<Reconciliation.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
-        return pdfCacheService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
+        return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
 
 
@@ -194,7 +194,7 @@ public class ReconcileController {
     @GetMapping("/sagicor/cache/{id}")
     public List<DrugClaim> getPDFCache(@PathVariable int id, Authentication authentication)
     {
-        PDFCache cache = pdfCacheService.getCacheByID(id);
+        Reconciliation cache = reconciliationService.getCacheByID(id);
 
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(cache,"client-data");
         List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(cache,"sagicor-data");

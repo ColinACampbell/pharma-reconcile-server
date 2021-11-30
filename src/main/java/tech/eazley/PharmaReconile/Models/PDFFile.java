@@ -9,7 +9,7 @@ public class PDFFile {
     private int id;
 
     @ManyToOne
-    private PDFCache pdfCache;
+    private Reconciliation reconciliation;
     private String fileType;
 
     @Lob
@@ -22,8 +22,8 @@ public class PDFFile {
 
     }
 
-    public void setPdfCache(PDFCache pdfCache) {
-        this.pdfCache = pdfCache;
+    public void setReconciliationCache(Reconciliation reconciliation) {
+        this.reconciliation = reconciliation;
     }
 
     public void setData(byte[] data) {
@@ -43,8 +43,8 @@ public class PDFFile {
     }
 
 
-    public PDFCache getPdfCache() {
-        return pdfCache;
+    public Reconciliation getReconciliationCache() {
+        return reconciliation;
     }
 
     public String getFileType() {
