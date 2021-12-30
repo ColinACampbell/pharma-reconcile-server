@@ -21,9 +21,9 @@ public class ReconciliationService {
         return reconciliationRepository.findLatestCache(pharmacy.getId());
     }
 
-    public Reconciliation getCacheByID(int cacheID)
+    public Reconciliation.PDFCacheProjection getCacheByID(int cacheID)
     {
-        return reconciliationRepository.findById(cacheID);
+        return reconciliationRepository.findCacheProjectionByID(cacheID);
     }
 
     public List<Reconciliation.PDFCacheProjection> getAllCachesByPharmacyAndProvider(Pharmacy pharmacy, Provider provider)

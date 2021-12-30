@@ -181,6 +181,15 @@ public class ReconcileController {
 
     }
 
+    @GetMapping("/sagicor/cache/{id}")
+    Reconciliation.PDFCacheProjection getReconciliation(@PathVariable int id, Authentication authentication)
+    {
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+        System.out.println(reconciliationService.getCacheByID(id));
+        return reconciliationService.getCacheByID(id);
+        //return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
+    }
+
     @GetMapping("/sagicor/caches")
     List<Reconciliation.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
     {
@@ -189,7 +198,7 @@ public class ReconcileController {
         return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
 
-
+    /**
     // TODO : Get Type of vendor and return the data based on that
     @GetMapping("/sagicor/cache/{id}")
     public List<DrugClaim> getReconciliation(@PathVariable int id, Authentication authentication)
@@ -202,5 +211,8 @@ public class ReconcileController {
         pdfService.setSagicorData(sagicorFiles.get(0).getData());
 
         return pdfService.extractPharmacyWorksClaims();
-    }
+    }**/
+
+
+
 }

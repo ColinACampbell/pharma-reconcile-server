@@ -27,6 +27,11 @@ public interface ReconciliationRepository extends CrudRepository<Reconciliation,
     )
     List<Reconciliation.PDFCacheProjection> findAllByPharmacy(int pharmacyID);
 
-    Reconciliation findById(int id);
+
+    @Query(
+            nativeQuery = true,
+            value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded, sagicor_totals as sagicorTotals, provider, charged, payable from reconciliations where id = ?1"
+    )
+    Reconciliation.PDFCacheProjection findCacheProjectionByID(int id);
 }
 
