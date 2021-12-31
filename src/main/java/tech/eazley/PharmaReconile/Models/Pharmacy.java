@@ -22,7 +22,7 @@ public class Pharmacy {
     CreditAccount creditAccount;
 
     @OneToMany(mappedBy = "pharmacy")
-    List<PDFCache> pdfCaches;
+    List<Reconciliation> reconciliationCaches;
 
     public Pharmacy(String name, String phone1, String phone2, String address, String parish)
     {

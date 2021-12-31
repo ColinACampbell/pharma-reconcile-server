@@ -85,7 +85,32 @@ public class PDFService {
         return drugClaims;
     }
 
-    public ArrayList<String> readClientDocument() throws IOException {
+    public float getSagicorClaimTotals()
+    {
+        try {
+            String[] lines = readPDF(sagicorData);
+
+            for (String line : lines)
+            {
+                if (line.contains("TOTALS PAYMENT(S):"))
+                {
+                    String[] results = line.split(" ");
+                    float paid = Float.parseFloat(results[2].replaceAll(",",""));
+                    float transactionFee = Float.parseFloat(results[5].replaceAll(",",""));
+                    float GCT = Float.parseFloat(results[7].replaceAll(",",""));
+                    return paid + transactionFee + GCT;
+                }
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+
+    public ArrayList<String> readPharmacyWorksDocument() throws IOException {
 
         String[] lines = readPDF(clientData);
         ArrayList<String> drugLines = new ArrayList<>();
@@ -105,7 +130,7 @@ public class PDFService {
         return drugLines;
     }
 
-    public ArrayList<DrugClaimResponseBody> extractData()  {
+    public ArrayList<DrugClaim> extractPharmacyWorksClaims()  {
 
         //Pattern pattern = Pattern.compile("(\\b[A-Z]+(?:\\s+[A-Z]+[^A-Za-z0-9])*\\b)");
 
@@ -113,7 +138,7 @@ public class PDFService {
         ArrayList<String> purchases = new ArrayList<>();
 
         try {
-            purchases = readClientDocument();
+            purchases = readPharmacyWorksDocument();
             claims = readSagicorDocument();
         } catch (Exception e)
         {
@@ -127,7 +152,7 @@ public class PDFService {
             claimHashMap.put(claim.getReferenceNumber(),claim);
         }
 
-        ArrayList<DrugClaimResponseBody> responseBody = new ArrayList<>();
+        ArrayList<DrugClaim> responseBody = new ArrayList<>();
 
         for ( String purchase: purchases )
         {
@@ -140,23 +165,13 @@ public class PDFService {
             else
                 continue;
 
-            DrugClaimResponseBody body = new DrugClaimResponseBody();
-            body.setDetails(purchase.substring(12));
-
-            body.setReferenceNumber(drugClaim.getReferenceNumber());
-            body.setDate(drugClaim.getDate());
-            body.setCharged(drugClaim.getCharged());
-            body.setExcluded(drugClaim.getExcluded());
-            body.setDeductibleMoney(drugClaim.getExcluded());
-            body.setDeductiblePercentage(drugClaim.getDeductiblePercentage());
-            body.setPayable(drugClaim.getPayable());
-            responseBody.add(body);
+            responseBody.add(drugClaim);
         }
 
         return responseBody;
     }
 
-    public byte[] highlightReferences(ArrayList<DrugClaimResponseBody> claimResponseBody)
+    public byte[] highlightReferences(ArrayList<DrugClaim> claimResponseBody)
     {
         String[] criteria= new String[claimResponseBody.size()];
 

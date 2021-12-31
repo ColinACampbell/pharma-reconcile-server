@@ -4,7 +4,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class PDFCache {
+@Table(name = "reconciliations")
+public class Reconciliation {
 
     @Id
     @GeneratedValue
@@ -20,19 +21,23 @@ public class PDFCache {
         String getProvider();
         float getCharged();
         float getPayable();
+        float getSagicorTotals();
     }
 
     @Column(nullable = true)
     private long dateAdded; // Use locally set time instead of server time
 
-    @OneToMany(mappedBy = "pdfCache")
+    @OneToMany(mappedBy = "reconciliation")
     private List<PDFFile> files;
-
 
     @Column(nullable = true)
     private long fromPeriod;
     @Column(nullable = true)
     private long toPeriod;
+
+    @Lob
+    @Column(nullable = true)
+    private String reconciliationDetails;
 
     @ManyToOne()
     @JoinColumn(name = "pharmacy_id")
@@ -47,12 +52,15 @@ public class PDFCache {
     Provider provider;
 
     @Column(nullable = true)
-    private double payable;
+    private float payable;
 
     @Column(nullable = true)
-    private double charged;
+    private float charged;
 
-    public PDFCache() {
+    @Column(nullable = true)
+    private float sagicorTotals; // transaction and gct included
+
+    public Reconciliation() {
 
     }
 
@@ -89,20 +97,28 @@ public class PDFCache {
         this.provider = provider;
     }
 
-    public void setCharged(double charged) {
+    public void setCharged(float charged) {
         this.charged = charged;
     }
 
-    public void setPayable(double payable) {
+    public void setPayable(float payable) {
         this.payable = payable;
     }
 
-    public double getCharged() {
+    public void setSagicorTotals(float sagicorTotals) {
+        this.sagicorTotals = sagicorTotals;
+    }
+
+    public float getCharged() {
         return charged;
     }
 
-    public double getPayable() {
+    public float getPayable() {
         return payable;
+    }
+
+    public float getSagicorTotals() {
+        return sagicorTotals;
     }
 
     public long getDateAdded() {
@@ -127,5 +143,13 @@ public class PDFCache {
 
     public Vendor getVendor() {
         return vendor;
+    }
+
+    public void setReconciliationDetails(String reconciliationDetails) {
+        this.reconciliationDetails = reconciliationDetails;
+    }
+
+    public String getReconciliationDetails() {
+        return reconciliationDetails;
     }
 }

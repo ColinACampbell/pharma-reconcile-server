@@ -2,7 +2,7 @@ package tech.eazley.PharmaReconile.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.eazley.PharmaReconile.Models.PDFCache;
+import tech.eazley.PharmaReconile.Models.Reconciliation;
 import tech.eazley.PharmaReconile.Models.PDFFile;
 import tech.eazley.PharmaReconile.Repositories.PDFFileRepo;
 
@@ -15,9 +15,9 @@ public class PDFFileService {
     private PDFFileRepo pdfFileRepo;
 
     @Transactional
-    public List<PDFFile> getByPDFCacheAndType(PDFCache sagicorPdfCache, String type)
+    public List<PDFFile> getByPDFCacheAndType(Reconciliation sagicorReconciliation, String type)
     {
-        return pdfFileRepo.findByPdfCacheAndFileType(sagicorPdfCache,type);
+        return pdfFileRepo.findByReconciliationAndFileType(sagicorReconciliation,type);
     }
 
     public void saveFile(PDFFile file)
