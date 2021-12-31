@@ -14,6 +14,8 @@ public class Pharmacy {
     private String phone2;
     private String parish;
     private int numberOfUsers = 0;
+    @Column(nullable = true)
+    private boolean isEnabled;
 
     @OneToMany(mappedBy = "pharmacy")
     List<PharmacyMember> members;
@@ -31,6 +33,7 @@ public class Pharmacy {
         this.phone2 = phone2;
         this.address = address;
         this.parish = parish;
+        this.isEnabled = true;
     }
 
     public  Pharmacy()
@@ -77,5 +80,15 @@ public class Pharmacy {
 
     public String getPharmacyName() {
         return pharmacyName;
+    }
+
+    public boolean getIsEnabled()
+    {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean isEnabled)
+    {
+        this.isEnabled = isEnabled;
     }
 }

@@ -100,9 +100,15 @@ public class UserController {
             throw new Exception("Wrong Password");
         }
 
+
         AppUserDetails appUserDetails = (AppUserDetails) appUserDetailsService.loadUserByUsername(userRequestBody.getEmail());
         String token = jwtUtil.generateToken(appUserDetails);
         PharmacyMember member = pharmacyMemberService.findByUser(appUserDetails.getUser());
+
+        if (!member.getPharmacy().getIsEnabled())
+        {
+            return new ResponseEntity<>(new AuthResponse(null,member.getPharmacy()),HttpStatus.FORBIDDEN);
+        }
 
         return new ResponseEntity<AuthResponse>(new AuthResponse(token,member.getPharmacy()), HttpStatus.OK);
     }
