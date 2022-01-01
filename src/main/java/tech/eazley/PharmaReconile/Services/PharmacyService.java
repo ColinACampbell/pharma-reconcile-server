@@ -7,6 +7,7 @@ import tech.eazley.PharmaReconile.Models.User;
 import tech.eazley.PharmaReconile.Repositories.PharmacyRepository;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PharmacyService {
@@ -37,6 +38,9 @@ public class PharmacyService {
         pharmacy.setIsEnabled(newPharmacyInfo.getIsEnabled());
         pharmacy.setPhone1(newPharmacyInfo.getPhone1());
         pharmacy.setPhone2(newPharmacyInfo.getPhone2());
+        pharmacy.setLastPaymentDate(newPharmacyInfo.getLastPaymentDate());
+        pharmacy.setNextPaymentDate(newPharmacyInfo.getLastPaymentDate() + TimeUnit.DAYS.toSeconds(newPharmacyInfo.getPaymentPeriodDays()));
+        pharmacy.setPaymentPeriodDays(newPharmacyInfo.getPaymentPeriodDays());
 
         pharmacyRepository.save(pharmacy);
 

@@ -14,6 +14,19 @@ public class Pharmacy {
     private String phone2;
     private String parish;
     private int numberOfUsers = 0;
+
+    @Column(nullable = true)
+    private Long lastPaymentDate;
+
+    @Column(nullable = true)
+    private Long nextPaymentDate;
+
+    @Column(nullable = true)
+    private Integer paymentPeriodDays = 0; // in days
+
+    @Column(nullable = true)
+    private Boolean isAdminPharmacy = false;
+
     @Column(nullable = true)
     private boolean isEnabled;
 
@@ -102,5 +115,38 @@ public class Pharmacy {
     public void setIsEnabled(boolean isEnabled)
     {
         this.isEnabled = isEnabled;
+    }
+
+    public void setAdminPharmacy(boolean adminPharmacy) {
+        isAdminPharmacy = adminPharmacy;
+    }
+
+    public void setLastPaymentDate(Long lastPaymentDate) {
+        this.lastPaymentDate = lastPaymentDate;
+    }
+
+    public void setNextPaymentDate(Long nextPaymentDate) {
+        this.nextPaymentDate = nextPaymentDate;
+    }
+
+    public void setPaymentPeriodDays(int paymentPeriodDays) {
+        this.paymentPeriodDays = paymentPeriodDays;
+    }
+
+    public Long getLastPaymentDate() {
+        return lastPaymentDate;
+    }
+
+    public Long getNextPaymentDate() {
+        return nextPaymentDate;
+    }
+
+    public Integer getPaymentPeriodDays() {
+        return paymentPeriodDays;
+    }
+
+
+    public Boolean isAdminPharmacy() {
+        return isAdminPharmacy;
     }
 }
