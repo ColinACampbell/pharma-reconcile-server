@@ -15,6 +15,21 @@ public class Pharmacy {
     private String parish;
     private int numberOfUsers = 0;
 
+    @Column(nullable = true)
+    private Long lastPaymentDate;
+
+    @Column(nullable = true)
+    private Long nextPaymentDate;
+
+    @Column(nullable = true)
+    private Integer paymentPeriodDays = 0; // in days
+
+    @Column(nullable = true)
+    private Boolean isAdminPharmacy = false;
+
+    @Column(nullable = true)
+    private boolean isEnabled;
+
     @OneToMany(mappedBy = "pharmacy")
     List<PharmacyMember> members;
 
@@ -31,6 +46,7 @@ public class Pharmacy {
         this.phone2 = phone2;
         this.address = address;
         this.parish = parish;
+        this.isEnabled = true;
     }
 
     public  Pharmacy()
@@ -49,6 +65,18 @@ public class Pharmacy {
 
     public void setNumberOfUsers(int numberOfUsers) {
         this.numberOfUsers = numberOfUsers;
+    }
+
+    public void setPhone1(String phone1) {
+        this.phone1 = phone1;
+    }
+
+    public void setPhone2(String phone2) {
+        this.phone2 = phone2;
+    }
+
+    public void setParish(String parish) {
+        this.parish = parish;
     }
 
     public int getId() {
@@ -77,5 +105,48 @@ public class Pharmacy {
 
     public String getPharmacyName() {
         return pharmacyName;
+    }
+
+    public boolean getIsEnabled()
+    {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean isEnabled)
+    {
+        this.isEnabled = isEnabled;
+    }
+
+    public void setAdminPharmacy(boolean adminPharmacy) {
+        isAdminPharmacy = adminPharmacy;
+    }
+
+    public void setLastPaymentDate(Long lastPaymentDate) {
+        this.lastPaymentDate = lastPaymentDate;
+    }
+
+    public void setNextPaymentDate(Long nextPaymentDate) {
+        this.nextPaymentDate = nextPaymentDate;
+    }
+
+    public void setPaymentPeriodDays(int paymentPeriodDays) {
+        this.paymentPeriodDays = paymentPeriodDays;
+    }
+
+    public Long getLastPaymentDate() {
+        return lastPaymentDate;
+    }
+
+    public Long getNextPaymentDate() {
+        return nextPaymentDate;
+    }
+
+    public Integer getPaymentPeriodDays() {
+        return paymentPeriodDays;
+    }
+
+
+    public Boolean isAdminPharmacy() {
+        return isAdminPharmacy;
     }
 }
