@@ -10,13 +10,9 @@ import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Models.PharmacyMember;
 import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Services.PharmacyService;
-
-import java.util.ArrayList;
 import java.util.List;
 
-
 // Set up admin structure to enable access to this feature
-
 @RestController()
 @RequestMapping("api/admin/")
 public class AdminController {
