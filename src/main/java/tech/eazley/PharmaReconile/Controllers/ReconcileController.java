@@ -6,13 +6,14 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.*;
-import tech.eazley.PharmaReconile.Services.PDFCacheService;
+import tech.eazley.PharmaReconile.Models.Http.ReconciliationResponse;
+import tech.eazley.PharmaReconile.Services.ReconciliationService;
 import tech.eazley.PharmaReconile.Services.PDFFileService;
 import tech.eazley.PharmaReconile.Services.PDFService;
 import tech.eazley.PharmaReconile.Services.PharmacyMemberService;
 import tech.eazley.PharmaReconile.Util.ConverterUtil;
+import tech.eazley.PharmaReconile.Util.ObjectMapperUtil;
 import tech.eazley.PharmaReconile.Utils.PDFAnnotator;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.Timestamp;
@@ -32,7 +33,7 @@ public class ReconcileController {
     ResourceLoader resourceLoader;
 
     @Autowired
-    private PDFCacheService pdfCacheService;
+    private ReconciliationService reconciliationService;
 
     @Autowired
      PDFFileService pdfFileService;
@@ -47,17 +48,18 @@ public class ReconcileController {
     }
 
     @GetMapping("/")
-    public List<PDFCache.PDFCacheProjection> getAllReconciliations(Authentication authentication)
+    public List<Reconciliation.PDFCacheProjection> getAllReconciliations(Authentication authentication)
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
-        return pdfCacheService.getAllCachesByPharmacy(pharmacyMember.getPharmacy());
+        return reconciliationService.getAllCachesByPharmacy(pharmacyMember.getPharmacy());
     }
 
 
+    // Create a reconciliation for sagicor
     @PostMapping("/sagicor")
-    public ArrayList<DrugClaimResponseBody> uploadDocuments(@RequestParam String vendor,
-                                                            @RequestBody HashMap<String,Object> body,
-                                                            Authentication authentication)
+    public ReconciliationResponse sagicor(@RequestParam String vendor,
+                                          @RequestBody HashMap<String,Object> body,
+                                          Authentication authentication)
     {
 
         String client = (String) body.get("client");
@@ -74,75 +76,82 @@ public class ReconcileController {
         // Encode base64 to bytes
         byte[] clientData = Base64.getDecoder().decode(clientBase64);
         byte[] sagicorData = Base64.getDecoder().decode(sagicorBase64);
-        PDFFile sagicorPDFFile = new PDFFile();
-        PDFFile clientFile = new PDFFile();
-        sagicorPDFFile.setData(sagicorData);
-        clientFile.setData(clientData);
 
-        clientFile.setFileType("client-data");
-        sagicorPDFFile.setFileType("sagicor-data");
+        //PDFFile sagicorPDFFile = new PDFFile();
+        //PDFFile clientFile = new PDFFile();
+        //sagicorPDFFile.setData(sagicorData);
+        //clientFile.setData(clientData);
+
+        //clientFile.setFileType("client-data");
+        //sagicorPDFFile.setFileType("sagicor-data");
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         // Create a PDF Cache row to represent the cache of both the client and sagicor file
-        PDFCache pdfCache = new PDFCache();
-        pdfCache.setDateAdded(timestamp.getTime());
-        pdfCache.setToPeriod(toPeriodTimestamp);
-        pdfCache.setFromPeriod(fromPeriodTimestamp);
+        Reconciliation reconciliation = new Reconciliation();
+        reconciliation.setDateAdded(timestamp.getTime());
+        reconciliation.setToPeriod(toPeriodTimestamp);
+        reconciliation.setFromPeriod(fromPeriodTimestamp);
 
         // Get pharmacy member to set pharmacy in the cache to be fetched later
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
 
-        pdfCache.setPharmacy(pharmacyMember.getPharmacy());
-        pdfCache.setVendor(ConverterUtil.stringToVendor(vendor));
-        pdfCache.setProvider(Provider.SAGICOR);
+        reconciliation.setPharmacy(pharmacyMember.getPharmacy());
+        reconciliation.setVendor(ConverterUtil.stringToVendor(vendor));
+        reconciliation.setProvider(Provider.SAGICOR);
 
         // Save this case to the db
-        pdfCacheService.saveCache(pdfCache);
+        reconciliationService.saveCache(reconciliation);
 
         // Set the parent table / object
-        clientFile.setPdfCache(pdfCache);
-        sagicorPDFFile.setPdfCache(pdfCache);
+        //clientFile.setPdfCache(pdfCache);
+        //sagicorPDFFile.setPdfCache(pdfCache);
 
         // Save the files to db for caching
-        pdfFileService.saveFile(sagicorPDFFile);
-        pdfFileService.saveFile(clientFile);
+        //pdfFileService.saveFile(sagicorPDFFile);
+        //pdfFileService.saveFile(clientFile);
 
         // Set the needed data
         pdfService.setClientData(clientData);
         pdfService.setSagicorData(sagicorData);
 
         // Add up the payable and charged here
-        ArrayList<DrugClaimResponseBody> claimResponseBodies = new ArrayList<>();
+        ArrayList<DrugClaim> claimResponseBodies = new ArrayList<>();
+        float claimsTotals = pdfService.getSagicorClaimTotals();
+
+
         if (vendor.equals("pharmacy-works"))
         {
-            double totalCharged = 0;
-            double totalPayable = 0;
-            claimResponseBodies = pdfService.extractData();
-            for (DrugClaimResponseBody drug: claimResponseBodies) {
+            float totalCharged = 0;
+            float totalPayable = 0;
+            claimResponseBodies = pdfService.extractPharmacyWorksClaims();
+
+            for (DrugClaim drug: claimResponseBodies) {
                 totalCharged += drug.getCharged();
                 totalPayable += drug.getPayable();
             }
 
-            System.out.println("Total Charged "+totalCharged);
-            System.out.println("Total Payable "+totalPayable);
+            reconciliation.setCharged(totalCharged);
+            reconciliation.setPayable(totalPayable);
+            reconciliation.setSagicorTotals(claimsTotals);
 
-            pdfCache.setCharged(totalCharged);
-            pdfCache.setPayable(totalPayable);
-            pdfCacheService.saveCache(pdfCache);
+            String drugClaimsToJson = ObjectMapperUtil.drugClaimsToJson(claimResponseBodies);
+
+            reconciliation.setReconciliationDetails(drugClaimsToJson);
+            reconciliationService.saveCache(reconciliation);
         }
 
-        return claimResponseBodies;
+        return new ReconciliationResponse(claimResponseBodies,claimsTotals);
     }
 
-    // Downloads the document of highlighted clients
+    // TODO : Get Highlight for different vendors
     @GetMapping(value = "/sagicor")
     private void getHighlight(
                           HttpServletResponse response, Authentication authentication) {
 
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
 
-        PDFCache fileCache = pdfCacheService.getLatestCache(pharmacyMember.getPharmacy());
+        Reconciliation fileCache = reconciliationService.getLatestCache(pharmacyMember.getPharmacy());
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(fileCache,"client-data");
         List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(fileCache,"sagicor-data");
 
@@ -152,7 +161,7 @@ public class ReconcileController {
         pdfService.setSagicorData(sagicorFiles.get(0).getData());
         pdfService.setClientData(clientFiles.get(0).getData());
 
-        byte[] data = pdfService.highlightReferences(pdfService.extractData());
+        byte[] data = pdfService.highlightReferences(pdfService.extractPharmacyWorksClaims());
         System.out.println("Result data length "+data.length);
         try {
             // get your file as InputStream
@@ -172,23 +181,38 @@ public class ReconcileController {
 
     }
 
-
-    @GetMapping("/sagicor/caches")
-    List<PDFCache.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
+    @GetMapping("/sagicor/cache/{id}")
+    Reconciliation.PDFCacheProjection getReconciliation(@PathVariable int id, Authentication authentication)
     {
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
-        return pdfCacheService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
+        System.out.println(reconciliationService.getCacheByID(id));
+        return reconciliationService.getCacheByID(id);
+        //return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
 
-    @GetMapping("/sagicor/cache/{id}")
-    public List<DrugClaimResponseBody> getPDFCache(@PathVariable int id, Authentication authentication)
+    @GetMapping("/sagicor/caches")
+    List<Reconciliation.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
     {
-        PDFCache cache = pdfCacheService.getCacheByID(id);
+        System.out.println("Hello World");
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+        return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
+    }
+
+    /**
+    // TODO : Get Type of vendor and return the data based on that
+    @GetMapping("/sagicor/cache/{id}")
+    public List<DrugClaim> getReconciliation(@PathVariable int id, Authentication authentication)
+    {
+        Reconciliation cache = reconciliationService.getCacheByID(id);
+
         List<PDFFile> clientFiles = pdfFileService.getByPDFCacheAndType(cache,"client-data");
         List<PDFFile> sagicorFiles = pdfFileService.getByPDFCacheAndType(cache,"sagicor-data");
         pdfService.setClientData(clientFiles.get(0).getData());
         pdfService.setSagicorData(sagicorFiles.get(0).getData());
 
-        return pdfService.extractData();
-    }
+        return pdfService.extractPharmacyWorksClaims();
+    }**/
+
+
+
 }

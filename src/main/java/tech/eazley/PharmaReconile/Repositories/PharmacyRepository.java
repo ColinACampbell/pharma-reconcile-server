@@ -6,6 +6,10 @@ import tech.eazley.PharmaReconile.Models.Pharmacy;
 import tech.eazley.PharmaReconile.Models.PharmacyMember;
 import tech.eazley.PharmaReconile.Models.User;
 
+import java.util.List;
+
 @Repository
 public interface PharmacyRepository extends CrudRepository<Pharmacy,Integer> {
+    //List<Pharmacy> findAll();
+    Pharmacy findById(int id);
 }
