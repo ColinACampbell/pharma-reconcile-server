@@ -41,6 +41,7 @@ public class PharmacyService {
         pharmacy.setLastPaymentDate(newPharmacyInfo.getLastPaymentDate());
         pharmacy.setNextPaymentDate(newPharmacyInfo.getLastPaymentDate() + TimeUnit.DAYS.toSeconds(newPharmacyInfo.getPaymentPeriodDays()));
         pharmacy.setPaymentPeriodDays(newPharmacyInfo.getPaymentPeriodDays());
+        pharmacy.setAdminPharmacy(newPharmacyInfo.isAdminPharmacy() != null && newPharmacyInfo.isAdminPharmacy());
 
         pharmacyRepository.save(pharmacy);
 
