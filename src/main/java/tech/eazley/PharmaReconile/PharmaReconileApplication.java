@@ -80,6 +80,10 @@ public class PharmaReconileApplication {
 			pharmacy.setIsEnabled(true);
 			pharmacy.setAdminPharmacy(true);
 			pharmacyService.savePharmacy(pharmacy);
+
+			user.setPassword(passwordEncoder.encode("password12#"));
+			userService.save(user);
+			System.out.print("Updated User Password");
 		}
 	}
 
