@@ -28,7 +28,7 @@ public class Pharmacy {
     private Boolean isAdminPharmacy = false;
 
     @Column(nullable = true)
-    private boolean isEnabled;
+    private Boolean isEnabled;
 
     @OneToMany(mappedBy = "pharmacy")
     List<PharmacyMember> members;
@@ -109,7 +109,7 @@ public class Pharmacy {
 
     public boolean getIsEnabled()
     {
-        return isEnabled;
+        return isEnabled != null && isEnabled;
     }
 
     public void setIsEnabled(boolean isEnabled)
