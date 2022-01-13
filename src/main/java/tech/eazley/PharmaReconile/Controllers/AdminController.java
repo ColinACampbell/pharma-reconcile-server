@@ -38,6 +38,16 @@ public class AdminController {
             return new ResponseEntity<>(new Pharmacy(),HttpStatus.FORBIDDEN);
     }
 
+    @GetMapping("/pharmacy/{id}")
+    public ResponseEntity<Pharmacy> getPharmacy(Authentication authentication,@PathVariable int id)
+    {
+        boolean isAdmin = getPharmacyMember(authentication).getPharmacy().isAdminPharmacy() != null && getPharmacyMember(authentication).getPharmacy().isAdminPharmacy();
+        if (isAdmin)
+            return new ResponseEntity<>(pharmacyService.getPharmacy(id), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(new Pharmacy(),HttpStatus.FORBIDDEN);
+    }
+
     private PharmacyMember getPharmacyMember(Authentication authentication)
     {
         AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
