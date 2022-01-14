@@ -25,7 +25,6 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        System.out.print(user);
         return user.getPassword() == null ? "" : user.getPassword() ;
     }
 

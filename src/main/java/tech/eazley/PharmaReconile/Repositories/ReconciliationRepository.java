@@ -33,5 +33,8 @@ public interface ReconciliationRepository extends CrudRepository<Reconciliation,
             value = "select id, from_period as fromPeriod, to_Period as toPeriod, date_added as dateAdded, sagicor_totals as sagicorTotals, provider, charged, payable from reconciliations where id = ?1"
     )
     Reconciliation.PDFCacheProjection findCacheProjectionByID(int id);
+
+    Reconciliation findById(int pharmacyID);
+
 }
 

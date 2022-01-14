@@ -3,9 +3,13 @@ package tech.eazley.PharmaReconile.Controllers;
 import org.apache.pdfbox.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tech.eazley.PharmaReconile.Models.*;
+import tech.eazley.PharmaReconile.Models.Exception.AuthorizationException;
+import tech.eazley.PharmaReconile.Models.Http.HttpResponseObj;
 import tech.eazley.PharmaReconile.Models.Http.ReconciliationResponse;
 import tech.eazley.PharmaReconile.Services.ReconciliationService;
 import tech.eazley.PharmaReconile.Services.PDFFileService;
@@ -190,13 +194,29 @@ public class ReconcileController {
         //return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
 
+    @DeleteMapping("/sagicor/cache/{id}")
+    ResponseEntity<?> deleteSagicorReconciliation(@PathVariable int id, Authentication authentication)
+    {
+        PharmacyMember pharmacyMember = getPharmacyMember(authentication);
+
+        try {
+            reconciliationService.deleteCache(id, pharmacyMember);
+        } catch (AuthorizationException e)
+        {
+            e.printStackTrace();
+            return new ResponseEntity<HttpResponseObj>(new HttpResponseObj("Bad request"),HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/sagicor/caches")
     List<Reconciliation.PDFCacheProjection> getSagicorReconciliations(Authentication authentication)
     {
-        System.out.println("Hello World");
         PharmacyMember pharmacyMember = getPharmacyMember(authentication);
         return reconciliationService.getAllCachesByPharmacyAndProvider(pharmacyMember.getPharmacy(),Provider.SAGICOR);
     }
+
 
     /**
     // TODO : Get Type of vendor and return the data based on that
