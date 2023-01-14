@@ -145,7 +145,6 @@ public class PDFService {
             e.printStackTrace();
         }
 
-        // Cache the data to make O(n^2) redundant
         HashMap<String,DrugClaim> claimHashMap = new HashMap<>();
         for (DrugClaim claim : claims)
         {
