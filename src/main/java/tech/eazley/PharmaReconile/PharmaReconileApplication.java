@@ -1,6 +1,7 @@
 package tech.eazley.PharmaReconile;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,7 +26,11 @@ public class PharmaReconileApplication {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Value("${spring.datasource.url}")
+	private static String clientUrl;
+
 	public static void main(String[] args) {
+		System.out.println(clientUrl);
 		SpringApplication.run(PharmaReconileApplication.class, args);
 	}
 
